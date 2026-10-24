@@ -1,6 +1,8 @@
 # HANDOFF (항상 덮어쓰기)
 
-- 단계: ① 인터뷰 **재시작** — 새 1라운드(1차 범위 경계) 발송
-- 잠정값(D-002~D-009, 재확인 대상): Platen / Windows 펜 없음·열람+가벼운 편집 / 브러시 단계적 / Google 로그인+Drive / PDF 1차 / .sdocx 후속 / 구조 은유 선택 / 스타노트 필기감 / 설정 가능 제스처 / 인식 제외
-- 다음 행동: 3라운드(12문항) 완료 → BRIEF §2b·§2c 덮어쓰기 → 리서치 발주
+- 단계: ② 리서치 — 발주 중(병렬 서브에이전트)
+- 완료: 인터뷰 3라운드(D-011~D-013), BRIEF v3 확정(완료 정의 포함)
+- 리서치 산출(docs/research/): rea-goodnotes.md · rea-starnote.md · rea-samsung-notes.md · rea-notesplus.md · feature-matrix.md · stack.md · brush-formats.md · typewriter-refs.md · sync-google.md · naming.md
+- 다음 행동: 산출물 검수(출처·등급·수치 유무) → LOCAL_TODO 취합 → ③ PLAN.md 작성 → ④ 승인 요청
+- 열린 질문: 없음(가정 항목은 BRIEF `[가정]` 표시 → PLAN에서 확인)
 - 코드: 없음 (승인 전)
