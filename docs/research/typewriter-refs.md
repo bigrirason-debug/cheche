@@ -111,21 +111,21 @@
 | **IBM Plex Mono** | **OFL 1.1**, RFN “Plex” — google/fonts `ofl/ibmplexmono/OFL.txt`(raw) + IBM/plex README `[직접]` `공식` | 없음(단, **Plex Sans KR** 같은 가족에 있음) | ★★★ | ★★★★ | 이탤릭이 Selectric Italic 12에서 유래, Mono 자체가 Selectric 활자들에 대한 헌정(Cooper Hewitt·typographica, S17 `2차` 스니펫). **UI 가족 통일**이 가능한 유일한 후보 |
 | **Special Elite** | **Apache 2.0** — google/fonts `apache/specialelite/LICENSE.txt` + METADATA.pb(raw) `[직접]` `공식` (designer Astigmatic, subsets latin) | 없음 | ★★★★★ | ★ | Smith Corona Special Elite·Remington Noiseless 모사 + 잉크 번짐 그런지. **디스플레이 전용** — 로고/스플래시 외 금지 |
 | **iA Writer Mono / Duo / Quattro** | **OFL 1.1**, RFN “iA Writer”·“Plex” — iaolo/iA-Fonts Mono/LICENSE.md `[직접]` `공식`. 단 README에 **다른 텍스트 에디터 번들·기본 서체 사용 금지, iA Writer 모방 제품 금지, 외부 사용 시 크레딧 요청** `[직접]` | 없음 | ★★★ | ★★★★ | 라이선스상 가능해도 README 가이드라인이 “에디터 번들”을 막음 → **Platen에 번들 부적합**. 같은 뿌리인 IBM Plex Mono를 쓰라고 README가 직접 권함 |
-| **JetBrains Mono** | **OFL 1.1**(소스 Apache 2.0) — github.com/JetBrains/JetBrainsMono `[직접]` `공식` | 없음(README에 한국어 언급 없음) | ★ | ★★★★★ | 큰 x-height, 8웨이트+이탤릭. 코드 서체 인상이 강해 타자기 맛은 없음 |
-| **Fira Code** | **OFL 1.1** — github.com/tonsky/FiraCode `[직접]` `공식` | 없음 | ★ | ★★★★ | Fira Mono + 리거처. 합자가 오히려 방해 |
-| **Space Mono** | **OFL 1.1** — github.com/googlefonts/spacemono `[직접]` `공식` (Colophon, Latin Extended) | 없음 | ★★ | ★★ | 기하 슬랩, 디스플레이 지향 |
+| **JetBrains Mono** | **OFL 1.1**(소스 Apache 2.0) — google/fonts `ofl/jetbrainsmono/OFL.txt`(raw) + JetBrains/JetBrainsMono README `[직접]` `공식` | 없음(README에 한국어 언급 없음) | ★ | ★★★★★ | 큰 x-height, 8웨이트+이탤릭. 코드 서체 인상이 강해 타자기 맛은 없음 |
+| **Fira Code** | **OFL 1.1** — google/fonts `ofl/firacode/OFL.txt`(raw) + tonsky/FiraCode README `[직접]` `공식` | 없음 | ★ | ★★★★ | Fira Mono + 리거처. 합자가 오히려 방해 |
+| **Space Mono** | **OFL 1.1** — google/fonts `ofl/spacemono/OFL.txt`(raw) + googlefonts/spacemono README `[직접]` `공식` (Colophon, Latin Extended) | 없음 | ★★ | ★★ | 기하 슬랩, 디스플레이 지향 |
 | **ITC American Typewriter** | **상용**(Monotype ITC 상표; MyFonts·Fonts In Use, S15 `2차` 스니펫). 1974 Joel Kaden·Tony Stan | 없음 | ★★★★ | ★★★ | 비례폭 “타자기풍”. 상용이라 사이드로드 앱에도 데스크톱/앱 임베딩 라이선스 필요 → **제외 권고** |
-| **D2Coding** | **OFL 1.1** — github.com/naver/d2codingfont `[직접]` `공식` | **완전**(11,172자, 한글 = 라틴 2배폭) | ★ | ★★★★ | 나눔바른고딕 기반(FONTRIX, 2015). 모노 한글 대체 1순위. 라틴은 고딕체라 타자기 맛 없음 → 라틴은 Courier Prime/Plex Mono, 한글만 D2Coding으로 폴백 |
-| **Nanum Gothic Coding** | **OFL** — google/fonts ofl/nanumgothiccoding METADATA.pb `[직접]` `공식` (Sandoll, subsets korean) | 완전 | ★ | ★★★ | D2Coding의 대안 |
+| **D2Coding** | **OFL 1.1**, RFN “D2Coding” — naver/d2codingfont `OFL.txt`(raw) + README `[직접]` `공식` | **완전**(11,172자, 한글 = 라틴 2배폭) | ★ | ★★★★ | 나눔바른고딕 기반(FONTRIX, 2015). 모노 한글 대체 1순위. 라틴은 고딕체라 타자기 맛 없음 → 라틴은 Courier Prime/Plex Mono, 한글만 D2Coding으로 폴백 |
+| **Nanum Gothic Coding** | **OFL 1.1**, RFN “Nanum…” 계열 — google/fonts `ofl/nanumgothiccoding/OFL.txt` + METADATA.pb(raw) `[직접]` `공식` (NHN 2010, Sandoll, subsets korean) | 완전 | ★ | ★★★ | D2Coding의 대안 |
 
 ### UI 본문용 산세리프 + 한글 후보
 
 | 서체 | 라이선스 | 한글 | 메모 |
 |---|---|---|---|
-| **IBM Plex Sans KR** | **OFL 1.1** — github.com/IBM/plex 패키지 `@ibm/plex-sans-kr` `[직접]` `공식` | 완전 | Plex Mono와 한 가족. **B안 1순위** |
-| **Pretendard** | **OFL** — github.com/orioncactus/pretendard `[직접]` `공식`. 단독 판매만 금지 | 완전 | Inter(라틴) + 본고딕(한글) + M PLUS(가나). 9웨이트 + Variable. **범용 1순위**, Courier Prime과 조합 시 |
-| **Noto Sans CJK KR** | Noto 리포 LICENSE = **OFL 1.1** `[직접]`(googlefonts/noto-fonts). noto-cjk 리포 LICENSE 경로는 404 → CJK도 OFL로 알려져 있으나 이번엔 미확인(`추정`) | 완전, 7웨이트(noto-cjk README `[직접]`) | 파일이 크다(서브셋 필요) |
-| **Nanum Gothic** | **OFL** — google/fonts ofl/nanumgothic METADATA.pb `[직접]` `공식` | 완전 | 산돌클라우드 안내: 번들·재배포·수정 허용, 폰트 파일 단독 유료 판매 금지(S14 `2차` 스니펫) |
+| **IBM Plex Sans KR** | **OFL 1.1**, RFN “Plex” — google/fonts `ofl/ibmplexsanskr/OFL.txt`(raw) + IBM/plex README(`@ibm/plex-sans-kr`) `[직접]` `공식` | 완전 | Plex Mono와 한 가족. **B안 1순위** |
+| **Pretendard** | **OFL 1.1**, RFN “Pretendard”(+Adobe ‘Source’ RFN 포함) — orioncactus/pretendard `LICENSE`(raw) + README `[직접]` `공식`. 단독 판매만 금지 | 완전 | Inter(라틴) + 본고딕(한글) + M PLUS(가나). 9웨이트 + Variable. **범용 1순위**, Courier Prime과 조합 시 |
+| **Noto Sans KR** | **OFL 1.1**, RFN ‘Source’(Adobe) — google/fonts `ofl/notosanskr/OFL.txt`(raw) `[직접]` `공식`. (notofonts/noto-cjk 리포의 LICENSE 경로는 404였음) | 완전, 7웨이트(noto-cjk Sans README raw `[직접]`) | 파일이 크다(서브셋 필요) |
+| **Nanum Gothic** | **OFL 1.1**, RFN “Nanum, NanumGothic…” — google/fonts `ofl/nanumgothic/OFL.txt` + METADATA.pb(raw) `[직접]` `공식` | 완전 | 산돌클라우드 안내: 번들·재배포·수정 허용, 폰트 파일 단독 유료 판매 금지(S14 `2차` 스니펫) |
 
 **추천 조합**
 1. **B안**: IBM Plex Mono(숫자·눈금·단축키) + IBM Plex Sans KR(UI 전반) — 모두 OFL. 모노 한글이 꼭 필요한 자리(예: 페이지 번호 “3 / 12쪽”)는 D2Coding 폴백.
@@ -239,26 +239,25 @@
 - iA Writer 라이트/다크 배경·커서 hex, 행간(앱 설치 후 샘플링).
 - Olivetti Lettera 22 공식 색 목록, Selectric 8색 조합 전체, Underwood 마감(아카이브 직접 열람).
 - Material 3 `m3.material.io` 원문과 iOS HIG 44 pt 원문 재확인(이번 환경 차단).
-- Noto Sans CJK 리포의 LICENSE 원문 확인(경로 404).
 
 ---
 
 ## 9. 출처 목록 (열람일 2026-10-24)
 
-폰트 — `[직접]` 열람
-- S1 https://github.com/quoteunquoteapps/CourierPrime — 공식
+폰트 — `[직접]` 열람 (라이선스 원문은 raw 파일로 확인)
+- S1 https://raw.githubusercontent.com/google/fonts/main/ofl/courierprime/OFL.txt , https://github.com/quoteunquoteapps/CourierPrime — 공식
 - S2 https://raw.githubusercontent.com/google/fonts/main/ofl/courierprime/DESCRIPTION.en_us.html — 공식
-- S3 https://github.com/IBM/plex , https://raw.githubusercontent.com/IBM/plex/master/README.md — 공식
+- S3 https://raw.githubusercontent.com/google/fonts/main/ofl/ibmplexmono/OFL.txt , https://raw.githubusercontent.com/google/fonts/main/ofl/ibmplexsanskr/OFL.txt , https://raw.githubusercontent.com/IBM/plex/master/README.md — 공식
 - S4 https://raw.githubusercontent.com/google/fonts/main/ofl/ibmplexmono/DESCRIPTION.en_us.html — 공식
-- S5 https://raw.githubusercontent.com/google/fonts/main/apache/specialelite/METADATA.pb , https://raw.githubusercontent.com/google/fonts/main/apache/specialelite/DESCRIPTION.en_us.html — 공식
-- S6 https://github.com/iaolo/iA-Fonts , https://raw.githubusercontent.com/iaolo/iA-Fonts/master/iA%20Writer%20Mono/LICENSE.md — 공식
-- S7 https://github.com/JetBrains/JetBrainsMono — 공식
-- S8 https://github.com/tonsky/FiraCode — 공식
-- S9 https://github.com/googlefonts/spacemono — 공식
-- S10 https://github.com/orioncactus/pretendard — 공식
-- S11 https://github.com/naver/d2codingfont — 공식
-- S12 https://raw.githubusercontent.com/notofonts/noto-cjk/main/Sans/README.md , https://github.com/googlefonts/noto-fonts/blob/main/LICENSE — 공식
-- S13 https://raw.githubusercontent.com/google/fonts/main/ofl/nanumgothic/METADATA.pb , https://raw.githubusercontent.com/google/fonts/main/ofl/nanumgothiccoding/METADATA.pb — 공식
+- S5 https://raw.githubusercontent.com/google/fonts/main/apache/specialelite/LICENSE.txt , https://raw.githubusercontent.com/google/fonts/main/apache/specialelite/METADATA.pb , https://raw.githubusercontent.com/google/fonts/main/apache/specialelite/DESCRIPTION.en_us.html — 공식
+- S6 https://raw.githubusercontent.com/iaolo/iA-Fonts/master/iA%20Writer%20Mono/LICENSE.md , https://raw.githubusercontent.com/iaolo/iA-Fonts/master/README.md — 공식
+- S7 https://raw.githubusercontent.com/google/fonts/main/ofl/jetbrainsmono/OFL.txt , https://raw.githubusercontent.com/JetBrains/JetBrainsMono/master/README.md — 공식
+- S8 https://raw.githubusercontent.com/google/fonts/main/ofl/firacode/OFL.txt , https://github.com/tonsky/FiraCode — 공식
+- S9 https://raw.githubusercontent.com/google/fonts/main/ofl/spacemono/OFL.txt , https://github.com/googlefonts/spacemono — 공식
+- S10 https://raw.githubusercontent.com/orioncactus/pretendard/main/LICENSE , https://github.com/orioncactus/pretendard — 공식
+- S11 https://raw.githubusercontent.com/naver/d2codingfont/master/OFL.txt , https://github.com/naver/d2codingfont — 공식
+- S12 https://raw.githubusercontent.com/google/fonts/main/ofl/notosanskr/OFL.txt , https://raw.githubusercontent.com/notofonts/noto-cjk/main/Sans/README.md — 공식 (noto-cjk `Sans/LICENSE.txt`·루트 `LICENSE`는 404)
+- S13 https://raw.githubusercontent.com/google/fonts/main/ofl/nanumgothic/OFL.txt , https://raw.githubusercontent.com/google/fonts/main/ofl/nanumgothiccoding/OFL.txt , 같은 폴더의 METADATA.pb — 공식
 
 폰트 — `[스니펫]`
 - S14 나눔글꼴 라이선스: https://www.sandollcloud.com/font/17678/NanumSquareNeo , https://www.sandollcloud.com/free-font/204/NanumGothicOTF — 2차
