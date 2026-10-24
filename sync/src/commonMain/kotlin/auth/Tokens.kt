@@ -48,6 +48,11 @@ interface GoogleAuth {
     suspend fun signOut()
 }
 
+/** 선택 구현: 로그아웃 시 원격 토큰 폐기. */
+interface TokenRevoker {
+    suspend fun revoke(tokens: OAuthTokens)
+}
+
 /**
  * OAuth 클라이언트 식별자(리포에 넣지 않음, sync-google §8.2 L5).
  * 데스크톱 앱 클라이언트는 `client_secret` 값이 필요하지만 기밀로 취급되지 않는다(§1.2).

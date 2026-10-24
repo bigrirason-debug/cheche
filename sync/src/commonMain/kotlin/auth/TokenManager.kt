@@ -28,7 +28,12 @@ class TokenManager(
     }
 
     suspend fun signOut() = lock.withLock {
-        try { auth.signOut() } finally { store.clear() }
+        try {
+            store.load()?.let { (auth as? TokenRevoker)?.revoke(it) }
+            auth.signOut()
+        } finally {
+            store.clear()
+        }
     }
 
     override suspend fun accessToken(): String = lock.withLock {

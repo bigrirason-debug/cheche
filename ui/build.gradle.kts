@@ -34,6 +34,14 @@ kotlin {
     applyDefaultHierarchyTemplate()
 
     sourceSets {
+        all {
+            languageSettings {
+                optIn("androidx.compose.material3.ExperimentalMaterial3Api")
+                optIn("androidx.compose.foundation.ExperimentalFoundationApi")
+                optIn("androidx.compose.ui.ExperimentalComposeUiApi")
+                optIn("kotlinx.coroutines.ExperimentalCoroutinesApi")
+            }
+        }
         val commonMain by getting {
             dependencies {
                 implementation(libs.kotlinx.coroutines.core)
@@ -59,20 +67,27 @@ kotlin {
                 implementation(libs.kotlinx.coroutines.test)
             }
         }
-        // JVM(데스크톱)과 Android가 공유하는 소스셋: java.* 사용 가능
+        // JVM(데스크톱)과 Android가 공유하는 소스셋: java.* 사용 가능 (java.awt / javax.imageio 금지 — PLAN §12-8)
         val jvmCommon by creating { dependsOn(commonMain) }
         val desktopMain by getting {
             dependsOn(jvmCommon)
             dependencies {
-
+                implementation(libs.kotlinx.coroutines.swing)
+            }
+        }
+        val desktopTest by getting {
+            dependencies {
+                // 목업 PNG(ImageComposeScene) 렌더용 — app-desktop 과 같은 산출물(승인 목록 §9.2 Skiko/CMP)
+                implementation(compose.desktop.currentOs)
             }
         }
         if (platenAndroid) {
             val androidMain by getting {
                 dependsOn(jvmCommon)
                 dependencies {
-                implementation(libs.androidx.graphics.core)
-                implementation(libs.androidx.input.motionprediction)
+                    implementation(libs.androidx.graphics.core)
+                    implementation(libs.androidx.input.motionprediction)
+                    implementation(libs.androidx.activity.compose)
                 }
             }
         }

@@ -42,7 +42,7 @@ class SyncEngine(
 
     /** 지정 노트(null 이면 전부) 중 dirty 인 것만 업로드. */
     suspend fun pushNotes(noteIds: Set<String>?): PushReport = lock.withLock {
-        run("push") {
+        tracked("push") {
             val folder = folderId()
             var uploaded = 0
             var skipped = 0
@@ -62,7 +62,7 @@ class SyncEngine(
 
     /** 원격 변경 반영(첫 실행은 전체 목록, 이후 증분). */
     suspend fun pull(): PullReport = lock.withLock {
-        run("pull") {
+        tracked("pull") {
             val folder = folderId()
             val meta = metaStore.load()
             val byFileId = local.listNotes().filter { it.fileId != null }.associateBy { it.fileId!! }.toMutableMap()
@@ -197,7 +197,7 @@ class SyncEngine(
         if (n > 0) _status.update { it.copy(conflictCount = it.conflictCount + n) }
     }
 
-    private suspend inline fun <T> run(what: String, block: () -> T): T {
+    private suspend inline fun <T> tracked(what: String, block: () -> T): T {
         _status.update { it.copy(state = SyncState.SYNCING, message = null) }
         return try {
             block().also { _status.update { it.copy(state = SyncState.IDLE, lastSyncMillis = clock.nowMillis(), message = null) } }
