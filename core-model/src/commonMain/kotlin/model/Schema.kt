@@ -7,3 +7,9 @@ object PlatenSchema {
     const val MIME: String = "application/vnd.platen.note+zip"
     const val EXTENSION: String = "platen"
 }
+
+/** 플랫폼별 식별자 생성(UUID v4 문자열). */
+expect fun newId(): String
+
+/** 현재 시각(epoch ms). */
+expect fun nowMillis(): Long
