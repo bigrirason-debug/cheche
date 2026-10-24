@@ -78,3 +78,30 @@
   - 가정(가역): 표 = 행·열·선 스타일·셀 크기 조절 가능한 벡터 객체, 1차. 레이저 포인터 = 굿노트식 일시 획(색·지속 시간 조절), 1차. 설정 = 필기 파라미터·제스처·UI 조정의 단일 설정 화면.
   - "내 맘대로 조정 가능하게"의 범위가 표에 한정인지 앱 전체인지는 불명확 → 앱 전체 설정 화면으로 넓게 가정하고 PLAN에서 항목을 열거해 확인받는다.
 - 인터뷰 종료. BRIEF v3 확정. 다음 단계: ② 리서치 발주.
+
+## D-014 · 2026-10-24 · 리서치 1차 완료 — 네트워크 제한 하에서의 등급 정책
+- 상황: 컨테이너 네트워크 정책이 대부분의 외부 호스트를 차단(열림: developer.android.com, raw.githubusercontent.com, Maven/pub.dev/nuget, 검색 스니펫). 8건 모두 "(스니펫)" 등급 항목이 섞임.
+- 결정: 계획서(PLAN v1)는 **공식 문서/1차 관찰 등급 항목에만 설계 근거를 둔다.** 스니펫·추정 항목은 가정(§2.1) 또는 LOCAL_TODO로 분리. 네트워크 개방 시 2차 검증 패스.
+- 출처: docs/research/*.md 상단 "열람 방식 고지".
+
+## D-015 · 2026-10-24 · 디컴파일 유래 정보의 취급
+- 상황: rea-starnote(Dhyan2404/StarNotes)·rea-samsung-notes(twangodev 정적 분석)에 타인이 분해한 APK 내부 정보(문자열·상수·예측기 수치)가 인용됨.
+- 결정(잠정, 사용자 판정 대기): 설계 근거로 **채택 금지**. 문서에는 검수 메모로 격리. 사용자가 삭제를 택하면 해당 항목 제거 후 재커밋. PLAN v1은 이 정보 없이 작성됨.
+
+## D-016 · 2026-10-24 · 스택 추천(조건부) = KMP + Compose Multiplatform, 대안 = 네이티브 2개
+- 선택지: Flutter / KMP+CMP / 네이티브 2개 / Avalonia.
+- 결정: 추천 B(KMP+CMP), 대안 C. **확정은 M0 스파이크 결과(stack.md §5-3 M1~M11)로.** 전환 규칙: M10(Windows 편집) 불합격 → C.
+- 이유: 입력·저지연 축에서 플랫폼 상한 직접 접근(공식 API 등급), 공통 렌더러 1벌로 렌더 일치, Kotlin 1벌 파서/동기화. Flutter는 히스토리 샘플·팜 플래그 미노출(1차 관찰).
+- 출처: docs/research/stack.md §3~§5.
+
+## D-017 · 2026-10-24 · .platen 포맷 = 결정적 zip + JSON 매니페스트 + 바이너리 획
+- 결정: `mimetype` 첫 엔트리(무압축), `manifest.json`, `pages/NNNN.json` + `pages/NNNN.strokes`(float32), `brushes/<id>.zip` 동봉, `assets/<sha1>`. 엔트리 정렬·타임스탬프 고정(Drive md5 비교용). `schema`/`minReader` 버전.
+- 이유: 공개 포맷·자기완결(브러시 동봉)·동기화 변경 감지. 선례(iwhg 브러시 zip)와 일치.
+- 출처: brush-formats §3, sync-google §5-4, rea-goodnotes(132dpi·455×588pt 기본 종이).
+
+## D-018 · 2026-10-24 · 브러시 모델 초안 채택(profile/stamp 하이브리드)
+- 결정: brush-formats §3.2 파라미터 표를 `brush.json` v1로 채택. 버릴 파라미터(컬러 다이내믹스·웻믹스·듀얼 브러시 등)도 그대로. 필압 커브 = 제어점 2~8 + LUT. 성능 상한(팁 ≤512, spacing ≥0.03).
+- 축소안: 해독 실패 시 팁+간격+이름만.
+
+## D-019 · 2026-10-24 · 마일스톤 M0~M8, 실행 모드 혼합
+- 결정: PLAN §5. M0(스파이크)·M1(디자인) manual, M2~M8 auto, 실기기 판정은 항상 멈춤. 각 M 끝 = 산출물 1개(GitHub Actions Artifacts; Windows는 windows-latest 러너).
