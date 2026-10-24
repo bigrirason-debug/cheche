@@ -1,0 +1,14 @@
+.gradle/
+build/
+**/build/
+local.properties
+secrets.properties
+*.keystore
+*.jks
+.idea/
+*.iml
+.kotlin/
+out/
+docs/research/samples/*.brush
+docs/research/samples/*.brushset
+docs/research/samples/*.abr
