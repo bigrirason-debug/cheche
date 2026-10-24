@@ -160,6 +160,7 @@
 
 - brush-converters 주석: "Procreate 4와 5는 같은 SilicaBrush 키 이름을 쓴다", 구형은 `paintSize`를 px로, `shapeRotation`을 고정 각도로 썼다(검출: `shapeAngle` 부재). [S-P4] (2차)
 - myBrush 리포는 최소 키만 가진 XML plist `Brush.archive`가 **Procreate 5.4에서 임포트 성공**했다고 보고(5.4 신규 브러시 시스템 문서는 미열람). [S-P16] (2차)
+- Procreate Handbook 버전별 페이지(help.procreate.com/procreate/handbook/{5.0,5.1,5.2}/brushes/brush-studio-settings) — (스니펫): 5.0/5.1 문서에 "이전 버전 테이퍼 동작으로 되돌리는 토글"(→ `taperVersion`의 Classic Taper와 부합)이 있고, Brush Studio 속성 수가 5.0/5.1의 11개에서 5.2에 12개로 늘었다고 함. 원문 미열람 → LOCAL_TODO L5.
 - 파서 정책: **누락 키 = 기본값**, 알 수 없는 키 = 보존(라운드트립 필요 시) 또는 무시.
 
 ### 1.5 셰이프·그레인 이미지 규격
@@ -168,7 +169,7 @@
 |---|---|---|
 | 채널 해석 | **흰색 = 칠해짐(불투명), 검정 = 투명**, 알파가 있으면 luminance×alpha. `shapeInverted`/`textureInverted`로 반전. | 1차 [S-P3][S-P6][S-P8][S-P18] ST-iPhonie |
 | 그레인 해석 | 동일(255 = 잉크가 비침). 밝기/대비는 이미지에 한 번 구워서 적용. | 1차 [S-P6][S-P8] |
-| 셰이프 해상도 | 실파일 1건 2048×2048(Lightbox). 합성 생성기는 512 또는 256. 튜토리얼들은 2048 권장(검색 스니펫, 미열람). 공식 최대치 **자료 부족**. | 1차(1건) + 추정 |
+| 셰이프 해상도 | 실파일 1건 2048×2048(Lightbox). 합성 생성기는 512 또는 256. 튜토리얼들은 2048×2048 또는 1800 px 이상 권장(yal.cc/procreate-binary-brush, paperlike.com 블로그 — (스니펫), 미열람). 공식 최대치 **자료 부족**. | 1차(1건) + (스니펫) + 추정 |
 | 배경 테두리 | NekoPhoto는 셰이프의 어두운 테두리를 Procreate 배경으로 보고 제거. | 1차(구현 선택) |
 | 포맷 | PNG 기본, JPG 그레인 관찰. | 1차 |
 
@@ -524,5 +525,7 @@ stamps/s   = v / spacing_px
 - [S-A11] chsh2/import_paint_brush `brush_file_parsers/abr_parser.py` — https://raw.githubusercontent.com/chsh2/import_paint_brush/main/brush_file_parsers/abr_parser.py — GPL-3.0 — 1차(소스)
 - [S-A12] storytold/photocraft `crates/io/src/abr_map.rs` — https://raw.githubusercontent.com/storytold/photocraft/main/crates/io/src/abr_map.rs — 라이선스 미확인 — 1차(소스)
 - psd-tools — https://github.com/psd-tools/psd-tools — MIT — 2차(ABR 리더 없음 확인)
+
+**(스니펫) 등급으로만 언급한 URL(원문 미열람)**: help.procreate.com/articles/daaqbd-importing-your-brushes · help.procreate.com/procreate/handbook/5.0/brushes/brush-studio-settings · …/5.1/… · …/5.2/brushes/brush-studio · yal.cc/procreate-binary-brush · paperlike.com/blogs/paperlikers-insights/procreate-brush-studio-explained · krita-artists.org/t/procreate-brush-import-plugin-prototype/104894 (Freya Lupen 변환기, "미완성·프리셋 깨짐" 자평).
 
 **열람 시도했으나 실패(인용 안 함, LOCAL_TODO L5)**: help.procreate.com(Brush Studio Shape/Grain/Settings, Importing your brushes, 5.4 brush system) · procreate.com/terms-conditions · adobe.com/devnet-apps/photoshop/fileformatashtml · community.adobe.com ABR 스레드 · fileformats.archiveteam.org/wiki/Photoshop_brush · gitlab.gnome.org · invent.kde.org · krita-artists.org(Freya Lupen 변환기 스레드) · developer.apple.com NSKeyedArchiver(응답은 왔으나 본문 비어 있음) · opensource.apple.com CFBinaryPList.c · eur-lex / wikipedia / copyright.gov(법적 메모용).
