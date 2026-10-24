@@ -111,6 +111,19 @@ class PdfExporterTest {
     }
 
     @Test
+    fun internalLinkToUnexportedPageIsRemovedWithWarning() {
+        // 플래너 2페이지만 내보내면 원본 GoTo(→3페이지)는 제거되고 URI 는 남는다
+        val page = Page("only", Size(PdfFixtures.W, PdfFixtures.H), Background.PdfPage("planner", 1))
+        val r = PdfExporter.export(Note("n5", "Partial", 0L, 0L, listOf(page)), assets, PdfFixtures.fakeGeometry, PdfFixtures.resolve)
+        assertTrue(r.warnings.any { "removed" in it }, "warnings=${r.warnings}")
+        Loader.loadPDF(r.bytes).use { doc ->
+            val links = doc.getPage(0).annotations.filterIsInstance<PDAnnotationLink>()
+            assertEquals(1, links.size)
+            assertEquals(PdfFixtures.URL, (links[0].action as PDActionURI).uri)
+        }
+    }
+
+    @Test
     fun missingAssetFallsBackToBlankPageWithWarning() {
         val page = Page("p", Size(300f, 300f), Background.PdfPage("nope", 0))
         val r = PdfExporter.export(Note("n4", "Missing", 0L, 0L, listOf(page)), { null }, PdfFixtures.fakeGeometry, PdfFixtures.resolve)

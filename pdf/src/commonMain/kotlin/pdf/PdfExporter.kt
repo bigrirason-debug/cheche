@@ -102,8 +102,9 @@ object PdfExporter {
             }
 
             writer.setInfo(PRODUCER, options.title ?: note.title, note.created, note.modified, fnv1a64(note.id))
-            val bytes = writer.finish { key, src -> importMap[key to src] }
-            return ExportResult(bytes, warnings)
+            val result = writer.finish { key, src -> importMap[key to src] }
+            if (result.droppedLinks > 0) warnings += "${result.droppedLinks} original internal link(s) pointed to PDF pages not in this note; removed"
+            return ExportResult(result.bytes, warnings)
         } finally {
             writer.close()
         }

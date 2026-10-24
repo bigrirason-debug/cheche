@@ -59,6 +59,20 @@ object PdfFixtures {
         ByteArrayOutputStream().also { doc.save(it) }.toByteArray()
     }
 
+    /** 400×600 페이지 1장에 /Rotate 90, 사용자 공간 (100,500)-(200,550) URI 링크. */
+    fun rotatedPdf(): ByteArray = PDDocument().use { doc ->
+        val p = PDPage(PDRectangle(W, H)).also { it.rotation = 90; doc.addPage(it) }
+        PDPageContentStream(doc, p).use { cs ->
+            cs.beginText(); cs.setFont(PDType1Font(Standard14Fonts.FontName.HELVETICA), 14f); cs.newLineAtOffset(40f, 560f); cs.showText("Rotated"); cs.endText()
+        }
+        p.annotations = listOf(PDAnnotationLink().apply {
+            rectangle = PDRectangle(100f, 500f, 100f, 50f)
+            action = PDActionURI().apply { uri = URL }
+        })
+        doc.documentId = 2L
+        ByteArrayOutputStream().also { doc.save(it) }.toByteArray()
+    }
+
     fun pngAsset(): ByteArray {
         val img = BufferedImage(8, 8, BufferedImage.TYPE_INT_ARGB)
         for (y in 0 until 8) for (x in 0 until 8) img.setRGB(x, y, 0xFFCC0000.toInt())

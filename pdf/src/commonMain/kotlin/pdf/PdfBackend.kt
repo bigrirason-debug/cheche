@@ -44,8 +44,11 @@ internal interface PdfWriter {
     /** 결정적 출력: 날짜·문서 ID 를 입력에서 유도한다. */
     fun setInfo(producer: String, title: String?, createdMillis: Long, modifiedMillis: Long, documentId: Long)
     /** 임포트된 페이지의 내부 GoTo 를 remap(sourceKey, 원본 페이지) → 출력 페이지로 바꾸고(null 이면 주석 제거) 저장. */
-    fun finish(remap: (sourceKey: String, sourcePageIndex: Int) -> Int?): ByteArray
+    fun finish(remap: (sourceKey: String, sourcePageIndex: Int) -> Int?): PdfWriteResult
     fun close()
 }
+
+/** 저장 결과. droppedLinks = 출력에 없는 페이지를 가리켜 제거된 원본 내부 링크 수. */
+internal class PdfWriteResult(val bytes: ByteArray, val droppedLinks: Int)
 
 internal expect fun createPdfWriter(): PdfWriter

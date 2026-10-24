@@ -34,6 +34,25 @@ class PdfImporterTest {
     }
 
     @Test
+    fun rotatedPageUsesVisualCoordinates() {
+        // 400×600 페이지에 /Rotate 90 → 시각 600×400; 사용자 (100,500)-(200,550) → 비회전 시각 (100,50)-(200,100)
+        // → 90° 시계 회전 (X,Y)→(H−Y, X): x∈[500,550], y∈[100,200]
+        val rot = PdfFixtures.rotatedPdf()
+        openPdf(rot).use { src ->
+            val sz = src.pageSize(0)
+            assertEquals(600f, sz.width, 0.01f); assertEquals(400f, sz.height, 0.01f)
+            val img = src.render(0, 0.5f)
+            assertEquals(300, img.width); assertEquals(200, img.height)
+            val link = src.links(0).single()
+            assertEquals(LinkTarget.Url(PdfFixtures.URL), link.target)
+            assertTrue(abs(link.rect.left - 500f) < 0.01f && abs(link.rect.right - 550f) < 0.01f, "rect=${link.rect}")
+            assertTrue(abs(link.rect.top - 100f) < 0.01f && abs(link.rect.bottom - 200f) < 0.01f, "rect=${link.rect}")
+        }
+        val pages = PdfImporter.toPages(rot, "r")
+        assertEquals(600f, pages[0].size.width, 0.01f)
+    }
+
+    @Test
     fun renderSizeIsCeilOfPtTimesScale() {
         openPdf(bytes).use { src ->
             assertEquals(3, src.pageCount)

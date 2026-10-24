@@ -103,7 +103,8 @@ private class DesktopPdfWriter : PdfWriter {
         info.modificationDate = utc(modifiedMillis)
     }
 
-    override fun finish(remap: (String, Int) -> Int?): ByteArray {
+    override fun finish(remap: (String, Int) -> Int?): PdfWriteResult {
+        var dropped = 0
         for (imp in imported) {
             val page = imp.sink.page
             val kept = ArrayList<PDAnnotation>()
@@ -112,7 +113,7 @@ private class DesktopPdfWriter : PdfWriter {
                     val dest = sourcePageDestination(a, imp.src)
                     if (dest != null) {
                         val out = pageIndexOf(dest, imp.src)?.let { remap(imp.key, it) }
-                        if (out == null) continue // 출력에 포함되지 않은 페이지로 가는 내부 링크는 제거
+                        if (out == null) { dropped++; continue } // 출력에 포함되지 않은 페이지로 가는 내부 링크는 제거
                         retarget(a, dest, pages[out].page)
                     }
                 }
@@ -123,7 +124,7 @@ private class DesktopPdfWriter : PdfWriter {
         for (s in pages) s.flushLinks()
         val out = ByteArrayOutputStream()
         doc.save(out)
-        return out.toByteArray()
+        return PdfWriteResult(out.toByteArray(), dropped)
     }
 
     private fun retarget(link: PDAnnotationLink, dest: PDPageDestination, target: PDPage) {
