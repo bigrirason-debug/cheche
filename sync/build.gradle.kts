@@ -58,7 +58,6 @@ kotlin {
                 implementation(libs.ktor.client.cio)
                 implementation(libs.ktor.server.core)
                 implementation(libs.ktor.server.cio)
-                implementation(libs.google.auth.oauth2)
             }
         }
         if (platenAndroid) {
@@ -69,6 +68,7 @@ kotlin {
                 implementation(libs.androidx.credentials)
                 implementation(libs.androidx.credentials.play)
                 implementation(libs.googleid)
+                implementation(libs.play.services.auth)
                 }
             }
         }

@@ -122,3 +122,8 @@
 
 ## D-022 · 2026-10-24 · 카운실 미사용 확정
 - 사용자: "카운실 ㄴㄴ 여기선". 이후 카운실(패널 교차검토)·관련 플러그인을 쓰지 않는다. 이미 반영한 1회 검토(D-021)는 유지.
+
+## D-023 · 2026-10-25 · 의존성 추가: play-services-auth 21.4.0 (Android Drive 범위 토큰)
+- 상황: Credential Manager 는 인증(ID 토큰)만 제공. `drive.file` 액세스 토큰은 `Identity.getAuthorizationClient()`(play-services-auth) 가 필요(sync 에이전트 보고, sync-google §6).
+- 결정: 위임(D-020)에 따라 추가. Apache-2.0(Android SDK 라이선스 하). 미사용 `google-auth-library-oauth2-http` 는 sync 에서 제거(루프백 OAuth 를 Ktor 로 직접 구현).
+- 리스크: androidMain 은 CI 에서만 컴파일 → 첫 CI 로그로 검증.
