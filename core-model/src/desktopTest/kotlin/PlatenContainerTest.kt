@@ -66,8 +66,31 @@ class PlatenContainerTest {
         files["mimetype"] = PlatenSchema.MIME.encodeToByteArray()
         files["manifest.json"] = """{"schema":1,"minReader":1,"noteId":"n","title":"t","created":1,"modified":2,"pageIds":["p"],"futureField":42}""".encodeToByteArray()
         files["pages/0001.json"] = """{"id":"p","size":{"width":100,"height":100},"background":{"type":"io.github.bigrirason_debug.platen.model.Background.Solid","color":-1},"objects":[],"strokes":[],"extra":true}""".encodeToByteArray()
-        files["pages/0001.strokes"] = ByteArray(0)
+        files["pages/0001.strokes"] = PlatenContainer.encodeSamples(emptyList())
         val r = PlatenContainer.readFiles(files)
         assertEquals("p", r.bundle.note.pages.single().id)
+    }
+
+    @Test
+    fun strokesHeaderAndWiderStrideForwardCompat() {
+        val s = Stroke("s", "b", 0, 1f, samples = listOf(InputSample(1f, 2f, 0.5f, 0f, 0f, 3f)))
+        val enc = PlatenContainer.encodeSamples(listOf(s))
+        assertEquals("PSTK", String(enc, 0, 4))
+        // stride 8 로 쓰인(미래 버전) 데이터도 앞 6개만 읽는다
+        val wide = java.nio.ByteBuffer.allocate(12 + 8 * 4).order(java.nio.ByteOrder.LITTLE_ENDIAN)
+        wide.put(enc, 0, 4); wide.putShort(2); wide.putShort(8); wide.putInt(0)
+        floatArrayOf(1f, 2f, 0.5f, 0f, 0f, 3f, 9f, 9f).forEach { wide.putFloat(it) }
+        val dec = PlatenContainer.decodeSamples(wide.array(), listOf(1))
+        assertEquals(InputSample(1f, 2f, 0.5f, 0f, 0f, 3f), dec.single().single())
+    }
+
+    @Test
+    fun rejectsPathTraversalEntries() {
+        val bout = java.io.ByteArrayOutputStream()
+        java.util.zip.ZipOutputStream(bout).use { z ->
+            z.putNextEntry(java.util.zip.ZipEntry("../evil")); z.write(1); z.closeEntry()
+        }
+        val ex = kotlin.runCatching { PlatenContainer.read(bout.toByteArray().inputStream()) }.exceptionOrNull()
+        assertTrue(ex is IllegalArgumentException, "expected rejection, got $ex")
     }
 }

@@ -38,7 +38,7 @@ kotlin {
                 implementation(libs.kotlinx.coroutines.core)
                 implementation(libs.kotlinx.serialization.json)
                 api(project(":core-model"))
-                api(project(":core-ink"))
+                // core-ink 는 brush 모듈이 쓰지 않는다(COUNCIL-REVIEW 좌석 1 #4 순환 의존 경고). 필요해지면 head 가 다시 건다.
             }
         }
         val commonTest by getting {

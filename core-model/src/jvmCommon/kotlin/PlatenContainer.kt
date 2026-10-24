@@ -127,16 +127,45 @@ object PlatenContainer {
 
     class UnsupportedSchema(val minReader: Int) : RuntimeException("needs reader >= $minReader, have ${PlatenSchema.WRITE_VERSION}")
 
+    /** 컨테이너 읽기 방어 상한(카운실 좌석 4): zip 폭탄·경로 탐색 방어. */
+    object Limits {
+        const val MAX_ENTRIES = 4096
+        const val MAX_ENTRY_BYTES = 256L * 1024 * 1024
+        const val MAX_TOTAL_BYTES = 1024L * 1024 * 1024
+    }
+
     fun read(input: InputStream): ReadResult {
         val files = HashMap<String, ByteArray>()
+        var total = 0L
         ZipInputStream(input).use { zip ->
             var e = zip.nextEntry
             while (e != null) {
-                if (!e.isDirectory) files[e.name] = zip.readBytes()
+                val name = e.name
+                require(!name.startsWith("/") && !name.contains("..") && !name.contains('\\')) { "허용되지 않는 엔트리 이름: $name" }
+                require(files.size < Limits.MAX_ENTRIES) { "엔트리 수 초과" }
+                if (!e.isDirectory) {
+                    val bytes = readBounded(zip, Limits.MAX_ENTRY_BYTES)
+                    total += bytes.size
+                    require(total <= Limits.MAX_TOTAL_BYTES) { "총 크기 초과" }
+                    files[name] = bytes
+                }
                 zip.closeEntry(); e = zip.nextEntry
             }
         }
         return readFiles(files)
+    }
+
+    private fun readBounded(input: InputStream, max: Long): ByteArray {
+        val out = ByteArrayOutputStream()
+        val buf = ByteArray(64 * 1024)
+        var n: Int
+        var total = 0L
+        while (input.read(buf).also { n = it } >= 0) {
+            total += n
+            require(total <= max) { "엔트리 크기 초과(${max}B)" }
+            out.write(buf, 0, n)
+        }
+        return out.toByteArray()
     }
 
     fun readFiles(files: Map<String, ByteArray>): ReadResult {
@@ -170,11 +199,20 @@ object PlatenContainer {
 
     // ---------------------------------------------------------------- samples codec
 
+    /*
+     * .strokes 레이아웃(카운실 채택 권고 2): 12바이트 헤더 + float32 LE 레코드.
+     *   magic "PSTK"(4) · formatVersion u16 · sampleStride u16(레코드당 float 수) · reserved u32
+     * 레코드 = [x, y, pressure, tiltX, tiltY, t] (stride=6). 상위 버전이 stride 를 늘리면 하위 리더는 앞 6개만 읽고 나머지를 건너뛴다.
+     */
+    private const val STROKES_MAGIC = 0x4B545350 // "PSTK" LE
+    private const val STROKES_VERSION = 1
     private const val FLOATS_PER_SAMPLE = 6
+    private const val STROKES_HEADER = 12
 
     fun encodeSamples(strokes: List<Stroke>): ByteArray {
         val total = strokes.sumOf { it.samples.size }
-        val buf = ByteBuffer.allocate(total * FLOATS_PER_SAMPLE * 4).order(ByteOrder.LITTLE_ENDIAN)
+        val buf = ByteBuffer.allocate(STROKES_HEADER + total * FLOATS_PER_SAMPLE * 4).order(ByteOrder.LITTLE_ENDIAN)
+        buf.putInt(STROKES_MAGIC); buf.putShort(STROKES_VERSION.toShort()); buf.putShort(FLOATS_PER_SAMPLE.toShort()); buf.putInt(0)
         for (s in strokes) for (p in s.samples) {
             buf.putFloat(p.x); buf.putFloat(p.y); buf.putFloat(p.pressure)
             buf.putFloat(p.tiltX); buf.putFloat(p.tiltY); buf.putFloat(p.t)
@@ -184,9 +222,18 @@ object PlatenContainer {
 
     fun decodeSamples(bytes: ByteArray, counts: List<Int>): List<List<InputSample>> {
         val buf = ByteBuffer.wrap(bytes).order(ByteOrder.LITTLE_ENDIAN)
+        if (bytes.size < STROKES_HEADER || buf.getInt(0) != STROKES_MAGIC) error(".strokes 헤더 불일치")
+        val stride = buf.getShort(6).toInt()
+        require(stride >= FLOATS_PER_SAMPLE) { ".strokes stride $stride < $FLOATS_PER_SAMPLE" }
+        val need = STROKES_HEADER.toLong() + counts.sumOf { it.toLong() } * stride * 4
+        require(need <= bytes.size) { ".strokes 길이 부족: need=$need have=${bytes.size}" }
+        buf.position(STROKES_HEADER)
+        val extra = stride - FLOATS_PER_SAMPLE
         return counts.map { n ->
             List(n) {
-                InputSample(buf.getFloat(), buf.getFloat(), buf.getFloat(), buf.getFloat(), buf.getFloat(), buf.getFloat())
+                val s = InputSample(buf.getFloat(), buf.getFloat(), buf.getFloat(), buf.getFloat(), buf.getFloat(), buf.getFloat())
+                repeat(extra) { buf.getFloat() }
+                s
             }
         }
     }
