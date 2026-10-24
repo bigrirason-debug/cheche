@@ -10,6 +10,7 @@ import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationLink
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.destination.PDDestination
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.destination.PDNamedDestination
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.destination.PDPageDestination
+import org.apache.pdfbox.rendering.ImageType
 import org.apache.pdfbox.rendering.PDFRenderer
 import java.awt.Color
 import java.awt.image.BufferedImage
@@ -68,13 +69,16 @@ private class DesktopPdfSource(private val doc: PDDocument) : PdfDocumentSource 
         val sz = pageSize(index)
         val w = max(1, ceil(sz.width * scalePxPerPt).toInt())
         val h = max(1, ceil(sz.height * scalePxPerPt).toInt())
+        // renderImage(RGB) 는 흰 종이 위에 floor(pt×scale) 크기로 그린다(회전·crop box 처리 포함).
+        // ceil 크기 캔버스에 흰색을 깔고 얹어 계약(ceil)을 맞춘다 — 차이는 최대 1px 열/행.
+        // (renderPageToGraphics 는 3.0.8 에서 캔버스를 검게 지우므로 쓰지 않는다.)
+        val rendered = renderer.renderImage(index, scalePxPerPt, ImageType.RGB)
         val img = BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB)
         val g = img.createGraphics()
         try {
             g.color = Color.WHITE
             g.fillRect(0, 0, w, h)
-            // renderImage() 는 floor 크기를 쓰므로 ceil 크기 캔버스에 직접 그린다(회전·crop box 는 PDFBox 가 처리).
-            renderer.renderPageToGraphics(index, g, scalePxPerPt)
+            g.drawImage(rendered, 0, 0, null)
         } finally {
             g.dispose()
         }

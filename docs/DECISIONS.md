@@ -127,3 +127,7 @@
 - 상황: Credential Manager 는 인증(ID 토큰)만 제공. `drive.file` 액세스 토큰은 `Identity.getAuthorizationClient()`(play-services-auth) 가 필요(sync 에이전트 보고, sync-google §6).
 - 결정: 위임(D-020)에 따라 추가. Apache-2.0(Android SDK 라이선스 하). 미사용 `google-auth-library-oauth2-http` 는 sync 에서 제거(루프백 OAuth 를 Ktor 로 직접 구현).
 - 리스크: androidMain 은 CI 에서만 컴파일 → 첫 CI 로그로 검증.
+
+## D-024 · 2026-10-25 · Compose 모듈의 로컬 검증 한계
+- 상황: Compose Multiplatform 1.12.2 데스크톱 아티팩트가 `androidx.compose.runtime`·`androidx.collection`·`androidx.annotation` 등 Google Maven 전용 의존성을 끌어오는데, 이 컨테이너는 dl.google.com 차단 → core-render·ui·app-desktop 은 로컬에서 의존성 해석 실패.
+- 결정: Compose 모듈의 증거는 **CI-실행 등급**(GitHub Actions ubuntu/windows)으로만. 로컬은 core-model·core-ink·brush·sync·pdf 의 desktopTest. core-render 에이전트가 쓴 init-script 우회(androidx 플레이스홀더 shim)는 스크래치패드 전용, 리포에 넣지 않음.

@@ -129,7 +129,7 @@ private class DesktopPdfWriter : PdfWriter {
     private fun retarget(link: PDAnnotationLink, dest: PDPageDestination, target: PDPage) {
         val nd: PDPageDestination = try {
             val arr = COSArray()
-            (dest.cosObject as? COSArray)?.let { arr.addAll(it) }
+            arr.addAll(dest.cosObject)
             PDDestination.create(arr) as PDPageDestination
         } catch (e: Exception) {
             PDPageXYZDestination()

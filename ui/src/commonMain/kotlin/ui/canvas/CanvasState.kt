@@ -125,7 +125,9 @@ class CanvasState(
     // ------------------------------------------------------------ 펜 세션
 
     private var strokeStartMs = 0L
-    private var liveSlot: PageSlot? = null
+    var liveSlot: PageSlot? = null; private set
+    /** 레이저 페이드 기준 시각(프레임 루프가 갱신). */
+    var laserNow: Long by mutableStateOf(0L)
 
     fun beginStroke(slotIdx: Int, pageSlot: PageSlot, first: InputSample, tMs: Long): Boolean {
         val s = slots.getOrNull(slotIdx) ?: return false
