@@ -60,6 +60,13 @@ kotlin {
 
             }
         }
+        val desktopTest by getting {
+            dependencies {
+                // 오프스크린 픽셀 테스트에 Skiko 네이티브 런타임이 필요하다(ui-desktop 은 skiko-awt 만 끌어온다).
+                // compose.desktop.currentOs 는 Compose 플러그인이 제공하는 별칭(카탈로그의 compose 버전과 동기화됨).
+                implementation(compose.desktop.currentOs)
+            }
+        }
         if (platenAndroid) {
             val androidMain by getting {
                 dependsOn(jvmCommon)

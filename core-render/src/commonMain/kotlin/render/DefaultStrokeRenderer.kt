@@ -4,7 +4,6 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.BlendMode as ComposeBlend
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
-import androidx.compose.ui.graphics.FilterQuality
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.PathFillType
@@ -100,7 +99,6 @@ class DefaultStrokeRenderer(
                     alpha = alpha,
                     colorFilter = tint,
                     blendMode = blend,
-                    filterQuality = FilterQuality.Low,
                 )
             }
         }

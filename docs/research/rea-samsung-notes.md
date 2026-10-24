@@ -3,15 +3,15 @@
 > 작성 2026-10-24 · Platen 리서치. 열람일은 모두 **2026-10-24**.
 > 형식: 관찰 → 수치 → 출처·등급. 실기기 실측은 문서 끝 "LOCAL_TODO 후보"로 분리.
 
-> **[head 검수 메모 2026-10-24]** 아래에서 "디컴파일 APK 클래스명"(`SpenFbrDrawPad`·`SpenLatencyConfiguration` 등)과 twangodev 정적 분석의 **예측기 내부 수치(M16/M20/M22, 16~23ms 선행)** 는 타인이 분해한 삼성 앱 내부 정보다. 킥오프 규칙(타사 코드 복사 금지·APK 분해는 로컬 숙제) 경계에 있으므로 사용자 판정 전까지 **설계 근거로 채택 금지**, "삼성도 프론트버퍼 + 예측을 쓴다"는 원리 수준으로만 쓴다. 공식 Android API(graphics-core·motionprediction·androidx.ink)와 MIT 파서 기반 .sdocx 판정은 유지. 판정 결과는 DECISIONS에 기록.
->
+> **정리 완료(D-020 ③, 2026-10-24)** — 디컴파일·네이티브 정적 분석 유래 항목 삭제, 항목별 판단은 문서 끝 "11. 정리 기록".
 
 ## 0. 범위·등급·네트워크 고지
 
 **등급 범례**
 - **공식 문서** — Android Developers, androidx 릴리스 노트, 라이선스 파일, AOSP 미러 소스.
-- **1차 관찰** — 공개 리포지토리의 README·소스·코드 검색 결과, 디컴파일 APK의 *클래스/문자열 존재 여부*(코드 로직은 읽지 않음, 복사 안 함).
-- **2차 글** — 제3자의 분석 문서(특히 twangodev/sdocx 리버스 엔지니어링 노트). 정적 분석이며 실기기 검증 아님.
+- **1차 관찰** — 공개 리포지토리의 README·소스·코드 검색 결과.
+- **2차 글** — 제3자의 분석 문서·커뮤니티 글. 실기기 검증 아님.
+- **2차 글(3자 포맷 분석)** — 사용자 소유 `.sdocx` 파일의 바이트 분석(twangodev `file-format.md`·`integrity-findings.md`·`rendering-support.md`, bxff `RESEARCH.md`). twangodev의 APK/네이티브 정적 분석 문서 유래 내용은 D-020 ③으로 삭제.
 - **(스니펫)** — WebSearch 결과 요약만 봤고 **원문 페이지는 열지 못함**. 등급을 한 단계 낮춰 취급.
 - **이전 프로젝트 실측** — BRIEF가 인정한 iwhg 실측 사실.
 - **추정** — 위 자료로 직접 확인 못 했지만 정황상 유력. 반드시 실측/재확인.
@@ -19,7 +19,7 @@
 **이 세션에서 열람 실패(DNS 차단)한 호스트** — 재시도하지 않음. 해당 정보는 (스니펫) 또는 "자료 부족"으로 표기:
 `samsung.com`, `ushl.samsung.com`, `*.community.samsung.com`, `developer.samsung.com`, `news.samsung.com`, `samsungmobilepress.com`, `apps.microsoft.com`(microsoft.com → 리다이렉트), `sammobile.com`, `sammyfans.com`, `gsmarena.com`, `wikipedia.org`, `wacom.com`, `androidcentral.com`, `androidheadlines.com`, `9to5google.com`, `xda-developers.com`, `apkmirror.com`, `android.googlesource.com`. `api.github.com`(gh CLI)은 세션 정책으로 403. `github.com` 페이지와 `raw.githubusercontent.com`, `developer.android.com`은 정상. WebSearch는 세션 예산 소진으로 후반부 질의 불가(에어 액션·호버 거리·터치 리포트 레이트·하이퍼링크 플래너 등은 "자료 부족").
 
-**타사 코드 사용 금지 준수** — 아래 GPL 파서(twangodev/sdocx, Ethran/notable 등)와 디컴파일 APK 리포는 *원리와 수치*만 적었다. Platen에 코드·에셋을 가져오면 안 된다.
+**타사 코드 사용 금지 준수** — 아래 GPL 파서(twangodev/sdocx, Ethran/notable 등)는 *원리와 수치*만 적었다. 디컴파일 APK 리포·네이티브 정적 분석 유래 항목은 D-020 ③에 따라 삭제했고 참조하지 않는다. Platen에 코드·에셋을 가져오면 안 된다.
 
 ---
 
@@ -27,14 +27,14 @@
 
 | 항목 | 관찰 | 출처·등급 |
 |---|---|---|
-| 플랫폼 | Android(One UI 기본 앱) + Windows(Microsoft Store). Android 내부 패키지 경로 `com.samsung.android.support.senl.nt.*`(앱), `com.samsung.android.sdk.pen.*`(S Pen SDK 엔진), `com.samsung.android.sdk.composer.*`(문서 컴포저)가 APK에 존재 | 1차 관찰 — GitHub 코드 검색, 리포 Yanndroid/Samsung-Notes-Port (디컴파일 smali 경로만 확인) |
-| Galaxy 전용 | 비삼성 기기용 "포트" 리포가 따로 존재한다는 사실 자체가 공식 APK가 비삼성 기기에서 안 도는 증거. 라이선스 MIT로 표기돼 있으나 내용은 삼성 저작물 → **참조만, 사용 금지** | 1차 관찰 — https://github.com/Yanndroid/Samsung-Notes-Port |
-| Android 버전 참조점 | 리버스 엔지니어링 문서가 참조한 APK: **4.4.45.37** | 2차 글 — twangodev/sdocx `pen-selection-findings.md` |
+| 플랫폼 | Android(One UI 기본 앱, 갤럭시 전용) + Windows(Microsoft Store) _(삭제: 디컴파일 유래 — D-020 ③: 내부 패키지 경로)_ | (스니펫) Microsoft Store·Samsung 지원 |
 | Windows판 제한(연혁) | 2023-10 업데이트로 "Samsung PC, Galaxy Book 전용" 제한 → 2025-05 업데이트로 다시 모든 Windows PC 설치 가능, 단 **Samsung Account 앱 설치 필수**, 비삼성 PC에선 "Galaxy Book에 최적화" 경고 표시 | (스니펫) 9to5google 2023-10-03, SamMobile 2025-05-22 — 원문 미열람 |
 | Windows판 펜 종류 설명 | 스토어 설명: "pens, fountain pens, pencils, highlighters, etc., 다양한 색·굵기" | (스니펫) Microsoft Store 9NBLGGH43VHV |
 | 2025~2026 기능 추가 | 가로 페이지 레이아웃·스티키 노트(One UI 8 베타, 2025-08) / **표 삽입** + 새 연필·형광펜 펜 타입(One UI 8.5, 2026-01) / 직선 형광펜·직선 마커 4종을 통합하고 **"Straighten lines" 토글**로 대체(2026-08) / 레이저 포인터(커뮤니티 보고 2025-03, 앱 4.4.26.71) | (스니펫) GSMArena news-69244, SamMobile 2026-01-22·2026-08-10, eu.community.samsung.com 11850692 |
 
-**자료 부족**: 현재 스토어 버전 번호(Android/Windows), Windows판에서 빠진 기능의 공식 목록.
+(삭제 행 2 — D-020 ③: 포트 리포 존재 근거, RE 문서 참조 APK 버전)
+
+**자료 부족**: 현재 스토어 버전 번호(Android/Windows), Windows판에서 빠진 기능의 공식 목록, 비삼성 기기 지원 여부의 공식 근거.
 
 ---
 
@@ -42,22 +42,15 @@
 
 ### 2a. 삼성노트가 체감 지연이 적은 이유 — 공개 정보로 재구성
 
-**핵심 발견: 삼성노트는 ① 프론트버퍼 직접 렌더 + ② VSync 정렬 모션 예측(칼만 + 신경망) + ③ 네이티브 드로우 루프를 S Pen SDK 엔진 안에 묶어 놓았다.** 마케팅 수치 2.8 ms도 "삼성노트로 측정"이다.
+_(삭제: 디컴파일 유래 — D-020 ③: S Pen SDK 엔진 내부 구조 — 프론트버퍼 드로우패드·예측 토글·VSync 전달 클래스, 신경망 예측기 수치·타이밍·램프, 펜 입력 경로, MotionEvent 어댑터, 기기 정책)_ 공개 자료로 남는 것은 마케팅 수치뿐이며, 2.8 ms도 "삼성노트로 측정"이다.
 
 | 관찰 | 수치/세부 | 출처·등급 |
 |---|---|---|
-| S Pen SDK 엔진에 **프론트버퍼 드로우패드**가 있다: `com.samsung.android.sdk.pen.engine.fbrDrawPad.SpenFbrDrawPad` — `SurfaceView` 상속, `Choreographer.FrameCallback` 구현, `SurfaceControl.Transaction`·`PixelCopy` 사용. 컴포저/페인팅/필기 뷰 매니저에 `mIsFbrSupportedFeature` 플래그 | "Fbr" = Front Buffer Rendering으로 읽는 것은 **추정**. 클래스 구조만 확인 | 1차 관찰 — GitHub 코드 검색 `repo:Yanndroid/Samsung-Notes-Port` (SpenFbrDrawPad*, SpenComposerImpl, SpenPaintingViewImpl, SpenNoteWritingViewManager) |
-| **예측 토글이 엔진 레벨에 있다**: `SpenLatencyConfiguration.getSupportPredictionInModel()`, `SpenEngineType.PREDICTION_TYPE_16 = 1`, `SpenWritingOptionView`의 prediction 버튼·`onPredictionEnabled(boolean)`, 뷰 구현체들의 `mIsPredictionEnabled` | 모델(기기)별로 예측 지원 여부를 결정하는 설정 클래스가 따로 있음 | 1차 관찰 — 위 리포 코드 검색 |
-| **VSync를 네이티브로 전달**: `SpenVSyncProvider`가 `Choreographer.postFrameCallback` → `Native_SendVSync(long)`. `SpenDrawLoopSurface/Texture`는 Choreographer 기반 네이티브 드로우 루프 | 렌더 루프와 예측 타이밍이 VSync에 묶임 | 1차 관찰 — 위 리포 코드 검색 |
-| **신경망 예측기 3종** M16 / M20 / M22. 예측 지평: M16 = 16 ms(1개), M20 = 5.6 / 11.1 / 19.4 ms, M22 = 6.3 / 14.6 / 22.9 ms. 모델 샘플링 파라미터 360 Hz(M16·M20), 480 Hz(M22). 필터는 기본 XY만 켬(압력·틸트·방위 필터는 꺼짐). 노이즈 상수 XY 약 1e-5(process)/6e-5(observation) | 즉 **최대 16~23 ms 선행**을 그린다 | 2차 글 — twangodev `neural-model-findings.md` (네이티브 정적 분석, 실기기 미검증) |
-| 예측 목표 시각 = 마지막 실입력 ns + `clock_gettime` 샘플 + **최근 VSync 시각에 정렬**, 프레임 주기 = 1e9/refresh_rate (120 Hz → 8,333,333 ns) | 예측은 "다음 표시 시점"을 노린다 | 2차 글 — `predictor-timing-findings.md` |
-| 예측 샘플 수는 **점진 램프**: 예산 b → b+1개 표시, 입력률/12(60 Hz→5, 120 Hz→10) 업데이트마다 1씩 증가. InkPen2는 특정 조건에서 0으로 리셋 | 획 시작 직후엔 예측을 짧게, 안정되면 길게 — 밀림 체감 억제 장치 | 2차 글 — `prediction-length-findings.md` |
-| 기본계 펜(InkPen2) 입력 경로: 압력 상한 1.0, 작업 큐 11개, **칼만 필터**가 출력 이벤트를 대체 가능, 그 뒤 `doPredict` | 스무딩과 예측이 펜별로 다름(Marker2는 이 분기 안 탐) | 2차 글 — `inkpen2-input-findings.md` |
-| MotionEvent 어댑터: 압력·틸트·방위를 **변환 없이 그대로 복사**(압력 커브 없음), 히스토리 샘플은 포인터-우선 순서, `resampled` 플래그는 SDK 34(Java)/35(네이티브) 게이트 | 압력 커브는 엔진이 아니라 펜(브러시) 단계에서 적용 | 2차 글 — `motion-event-adapter-findings.md` |
-| 예측기 워커 스레드 생성 정책: `ro.product.model`이 `SM-P61`로 시작하고 SDK ≠ 29일 때만, `SM-T39`는 예측기 종류 마스킹 | 저가 기기 분기가 하드코딩 | 2차 글 — `predictor-device-policy-findings.md` |
-| Wacom 보도자료: **2.8 ms는 Tab S8 Ultra/S8+에서 "Samsung Notes 사용 시" 측정** | 삼성 발표 지연치는 삼성노트+예측 포함 수치 | (스니펫) wacom.com 2022/1469 — 원문 미열람 |
+| Wacom 보도자료: **2.8 ms는 Tab S8 Ultra/S8+에서 "Samsung Notes 사용 시" 측정** | 삼성 발표 지연치는 삼성노트 앱 포함 수치 | (스니펫) wacom.com 2022/1469 — 원문 미열람 |
 
-**추정 종합(실측 필요)**: 삼성노트 체감 지연 = (하드웨어 EMR + 120 Hz 패널) + (프론트버퍼로 버퍼 스왑 1~2프레임 생략) + (VSync 정렬 예측으로 1~2프레임 선행). 타사 앱이 같은 기기에서 더 느린 건 뒤 두 항을 못 쓰기 때문이라는 설명이 정합적이다. 커뮤니티에도 "같은 기기라도 앱마다 지연이 크게 다르다"는 관찰이 있다 — (스니펫) Shapr3D 포럼.
+(삭제 행 9 — D-020 ③)
+
+**추정(실측 필요)**: 삼성노트 체감 지연 = (하드웨어 EMR + 120 Hz 패널) + 앱 측 저지연 기법. 어떤 기법인지는 공개 자료로 확인되지 않으나, 공식 API(§2c)만으로도 프론트버퍼 렌더와 모션 예측은 구현 가능하다. 커뮤니티에도 "같은 기기라도 앱마다 지연이 크게 다르다"는 관찰이 있다 — (스니펫) Shapr3D 포럼.
 
 ### 2b. S펜·Tab S9+ 공식 스펙
 
@@ -66,7 +59,7 @@
 | 필압 레벨 | 4096 | (스니펫) 리셀러 스펙(EJ-PX710), Samsung Note8 지원 페이지 "2048→4096" — 공식 Tab S9 스펙 페이지는 차단 |
 | S펜 지연 | Tab S8+/S8 Ultra **2.8 ms**(기본 Tab S8은 6.2 ms); Tab S9 시리즈도 2.8 ms로 보도 | (스니펫) AndroidHeadlines, AndroidCentral — 삼성 1차 자료 미확인 |
 | 디스플레이 | 12.4" 120 Hz(추정; gsmarena·삼성 스펙 페이지 차단) | 추정 |
-| S펜 리포트(샘플링) 레이트, 호버 거리 | **자료 부족** — 위 신경망 모델 파라미터(360/480 Hz)는 모델 상수이지 기기 스펙이 아님 | — |
+| S펜 리포트(샘플링) 레이트, 호버 거리 | **자료 부족** → LOCAL_TODO ② | — |
 | 터치 리포트 레이트 | **자료 부족** → LOCAL_TODO ② | — |
 | Samsung Developers S Pen SDK/Remote SDK 문서 | 열람 실패(차단) | — |
 
@@ -92,7 +85,7 @@
 | 무엇을 주나 | `MotionEventPredictor.newInstance(view)` / `record(event)` 매 이벤트 / `predict()` → **다음 프레임 렌더 시점**의 예측 `MotionEvent`(x, y, pressure, orientation, tilt) 또는 null | 공식 문서(가이드) + 1차 관찰(Javadoc) |
 | 동작 | API 34+에서는 프레임워크 `android.view.MotionPredictor`(API 34 추가 — API diff 확인)를 사용하되 **"stylus 이벤트로 제한될 수 있음"** → `MotionPredictor.isPredictionAvailable` 확인 권고. 그 외는 라이브러리 내장 **칼만 필터**(`KalmanMotionEventPredictor`: `PredictionEstimator`가 예측 시간차를 내고 `MultiPointerPredictor.predict(dt)`) | 1차 관찰 — androidx 소스 Javadoc; 공식 API diff 34 |
 | 제약 | 예측점은 **최종 렌더에 쓰지 말 것**, 새 실점이 오면 제거. 가이드 본문은 "API 19+"라고 쓰여 있으나 릴리스 노트상 minSdk는 23 — 문서 불일치 | 공식 문서 |
-| 이전 프로젝트 실측 | **기본 OFF가 체감상 나았다(밀림)**. 삼성노트는 예측 길이를 점진 램프(2a)로 다룬다 — Platen에서 예측을 켠다면 같은 완화가 필요하다는 뜻 | 이전 프로젝트 실측 + 2차 글 |
+| 이전 프로젝트 실측 | **기본 OFF가 체감상 나았다(밀림)**. Platen에서 예측을 켠다면 예측 길이 램프·페이드 같은 완화가 필요하다는 뜻 | 이전 프로젝트 실측 |
 
 #### (3) `androidx.ink`
 
@@ -156,16 +149,14 @@
 | 기본 펜(볼펜형) | 필압→굵기 약 **1.2배** 범위, 끝 테이퍼 속도 의존 **0.58~0.85**(0까지 안 감) | 이전 프로젝트 실측 |
 | 커뮤니티 교차 | "표준 펜 굵기는 속도 의존, 필압 반응은 만년필·경사펜·잉크 브러시에만" / 어떤 업데이트 후 필압 반응이 세졌다는 보고(날짜 불명) | (스니펫) r1.community.samsung.com 2870358, 31975559 |
 | 캘리그라피 펜 | 닙 **141°**(↗↙), 납작비 **0.39**, 필압 무관 | 이전 프로젝트 실측 |
-| 내부 펜 레지스트리 | `com.samsung.android.sdk.pen.pen.preload.` + FountainPen, InkPen, **InkPen2**, StraightInkPen2, MontblancFountainPen, MontblancCalligraphyPen, ChineseBrush, ObliquePen, Pencil/Pencil2/Pencil3, ColoredPencil, Crayon/Crayon2, Marker/Marker2/Marker3/Marker4, StraightMarker(Marker3 라이브러리), StraightHighlighter(Marker4 라이브러리), Brush, BrushPen, AirBrushPen, OilBrush3, WaterColorBrush, Smudge, MagicPen, Beautify, **LaserPen**, TapePen, GlowPen, BlurPen, MosaicPen(2), PatternImagePen, FadedPen, SelectPen(2), Eraser, 폴백 DefaultPen. 일부는 ARM64 라이브러리 없음 | 2차 글 — twangodev `pen-selection-findings.md` (APK 4.4.45.37) |
-| 사용자에게 보이는 펜 수 | 즐겨찾는 펜 추가 시 **6종 펜 타입** 중 선택 + 색 + 굵기 | (스니펫) Samsung 지원 "How to use Samsung Notes" |
-| 펜 굵기 레벨 | 레벨 1~100, 2 미만 = 최소, 99 초과 = 최대, 사이는 level/100 보간. 픽셀 분기: 문서 **짧은 변**에 비례(긴 변 무관, 줌 무관). 밀도 분기: dp 범위 × dpi/160. Marker2 예: 짧은 변 720 → 레벨1 1.09 / 레벨50 16.7 / 레벨100 32.3 px; 320 dpi → 2.28 / 34.9 / 67.4. 세터 클램프 **0.4~800** | 2차 글 — `pen-size-findings.md` |
-| 만년필(Fountain V14) | 초기 폭 = 펜 크기/2 × 첫 압력(압력 상한 1), 5단위 미세이동 필터, 방향비 링 3개로 방향 의존 음영, 적응 2차 분할로 스탬프 배치(x,y,반지름,접선). 속도 지수·테이퍼 길이 수치는 미공개 | 2차 글 — `fountain-v14.md` |
-| 불투명도 | 펜별 고정 불투명도, Marker2는 마스크/합성 식 별도(형광펜 겹침 처리) | 2차 글 — `pen-opacity-findings.md` |
+| 사용자에게 보이는 펜 수 | 즐겨찾는 펜 추가 시 **6종 펜 타입** 중 선택 + 색 + 굵기. 내부 펜 종류 수·펜별 렌더 모델·굵기 보간·불투명도 규칙은 **자료 부족** | (스니펫) Samsung 지원 "How to use Samsung Notes" |
 | 스무딩 설정 UI | 공식 토글 없음. 커뮤니티 "스무딩을 끌 수 있으면" 요청, 빠른 획이 덜 그려진다는 보고(Tab S6 Lite, One UI 6.1) | (스니펫) r1.community 30274740 |
-| 필압 커브 설정 UI | 없음(굵기·색만). 입력 어댑터는 압력을 변환 없이 전달하므로 커브는 펜 엔진 고정값 | (스니펫) + 2차 글 |
+| 필압 커브 설정 UI | 없음(굵기·색만). 내부 커브 처리는 **자료 부족** _(삭제: 디컴파일 유래 — D-020 ③: 어댑터 무변환 → 엔진 고정값 추론)_ | (스니펫) |
 | **형광펜 다크 모드 비가시** | 2023 커뮤니티: "어두운 종이에서 형광펜이 안 보임"(해결책 미기재). 별개 스레드: 설정 → Page style and template → **"Adjust color in dark mode"** 옵션으로 글자색 반전. 공식 문서 없음 | (스니펫) r1.community 18658456, us.community 2011431 |
 | 삼성 PDF 내보내기의 형광펜 | 서드파티 변환기가 "자기 출력의 형광펜이 삼성 PDF 내보내기보다 약 2배 진하다"고 기록 → 삼성 내보내기는 형광펜 알파를 낮게 굽는다는 간접 증거 | 1차 관찰 — FizzyHedgehog/sdocx-converter-android README |
-| 예측 잔상 처리 | 삼성: 예측 샘플 점진 램프 + InkPen2 리셋 / androidx.ink: `predictionFadeOutBehavior` | 2차 글 + 1차 관찰 |
+| 예측 잔상 처리 | androidx.ink: `predictionFadeOutBehavior` _(삭제: 디컴파일 유래 — D-020 ③: 삼성 램프·리셋 방식)_ | 1차 관찰 |
+
+(삭제 행 4 — D-020 ③: 내부 펜 레지스트리, 펜 굵기 레벨 보간, Fountain V14 렌더 모델, 펜별 불투명도)
 
 ---
 
@@ -179,17 +170,17 @@
 | 즐겨찾는 펜 | "Favourite pen 아이콘 → 추가 아이콘"으로 추가, 빨간 마이너스로 제거. **슬롯 수 자료 부족**. 커뮤니티에 "즐겨찾는 펜 폴더" 요청(긴 목록을 순회해야 함) → 폴더 없음 | (스니펫) Samsung 지원 페이지, eu.community 7028521 |
 | 세로 스크롤·페이지 카드·폭맞춤 기본 | **자료 부족**. 단, "pageless" 문서(연속 1장)가 포맷에 존재(변환기가 ISO 페이지로 분할 옵션 제공) + 2025-08 **가로 페이지 레이아웃** 추가 | 1차 관찰(sdocx2pdf README) + (스니펫) |
 | 폴더 | 지원(일반 지식) — 공식 페이지 미열람 | 추정 |
-| 올가미 | `SelectPen/SelectPen2` 내부 펜, 자유형 올가미 크롭은 `.spi`로 저장 | 2차 글 + 1차 관찰(FizzyHedgehog) |
-| 텍스트·이미지 | 객체 타입: Stroke(1), TextBox(2), Image(3), Container(4), Shape(7), Line(8), Voice(10), Formula(11), Web(13), Painting(14), Video(16), **Link(17)**, Plot(20), Math(21), **Table(22, 리치텍스트 내)**, CodeBlock(23), AttachedFile(24), StrokeGroup(100); Deprecated Table(12) | 2차 글 — `rendering-support.md` |
-| 도형 보정 | Shape/Line 객체 + `Beautify` 펜 + 2026-08 "Straighten lines" 토글(직선 형광펜 4종을 대체) | 2차 글 + (스니펫) |
+| 올가미 | 자유형 올가미 크롭은 `.spi`로 저장. 도구 UI는 **자료 부족** _(삭제: 디컴파일 유래 — D-020 ③: 내부 펜 이름)_ | 1차 관찰(FizzyHedgehog) |
+| 텍스트·이미지 | 객체 타입: Stroke(1), TextBox(2), Image(3), Container(4), Shape(7), Line(8), Voice(10), Formula(11), Web(13), Painting(14), Video(16), **Link(17)**, Plot(20), Math(21), **Table(22, 리치텍스트 내)**, CodeBlock(23), AttachedFile(24), StrokeGroup(100); Deprecated Table(12) | 2차 글(3자 포맷 분석) — `rendering-support.md`(페이지 레코드의 객체 타입 ID) |
+| 도형 보정 | Shape/Line 객체 + 2026-08 "Straighten lines" 토글(직선 형광펜 4종을 대체) _(삭제: 디컴파일 유래 — D-020 ③: 내부 Beautify 펜)_ | 2차 글(3자 포맷 분석) + (스니펫) |
 | 템플릿·표지 | 설정 "Page style and template"(다크 모드 색 보정 포함) | (스니펫) |
 | 검색(손글씨 인식) | **자료 부족**(검색 예산 소진). 일반 지식상 지원 | 추정 |
 | 내보내기 | **.sdocx(Samsung Notes file) · PDF · Word · PowerPoint · 이미지 · 텍스트**. PPT는 가로 레이아웃으로 변환, 손글씨는 이미지·타이핑은 텍스트. Word 내보내기는 Note10 세대부터 | (스니펫) Samsung 지원 ANS10002404 등 |
 | 옆버튼 관례 | **자료 부족**(공식 페이지 차단). 삼성 기본 "버튼 누른 채 긋기 = 지우개"는 추정 → LOCAL_TODO | 추정 |
 | 손가락 필기 토글 | 설정에 **"Finger drawing off"**(S펜 전용 그리기) | (스니펫) Samsung 지원 ANS10003217 |
 | 에어 액션/제스처 설정 | **자료 부족** | — |
-| 레이저 포인터 | 내부 `LaserPen` 존재 + 커뮤니티: 2025-03 업데이트(4.4.26.71)에 **빛줄기 모드·점 모드·색 선택** | 2차 글 + (스니펫) |
-| 표 삽입 | One UI 8.5(2026-01)에서 추가; 포맷엔 Table(22)·Deprecated Table(12) | (스니펫) + 2차 글 |
+| 레이저 포인터 | 커뮤니티: 2025-03 업데이트(4.4.26.71)에 **빛줄기 모드·점 모드·색 선택** _(삭제: 디컴파일 유래 — D-020 ③: 내부 펜 이름)_ | (스니펫) |
+| 표 삽입 | One UI 8.5(2026-01)에서 추가; 포맷엔 Table(22)·Deprecated Table(12) | (스니펫) + 2차 글(3자 포맷 분석) |
 
 ---
 
@@ -199,12 +190,12 @@
 
 | 이전 프로젝트 실측 | 공개 분석 | 판정 |
 |---|---|---|
-| zip 변형 | ZIP 컨테이너. 엔트리 `note.note`(헤더·텍스트), `pageIdInfo.dat`(페이지 순서·해시), `<UUID>.page`, `media/mediaInfo.dat`, 미디어, `end_tag.bin`. 엔트리 순서·압축 방식은 의미 없음 | **일치** — 2차 글 `file-format.md` |
+| zip 변형 | ZIP 컨테이너. 엔트리 `note.note`(헤더·텍스트), `pageIdInfo.dat`(페이지 순서·해시), `<UUID>.page`, `media/mediaInfo.dat`, 미디어, `end_tag.bin`. 엔트리 순서·압축 방식은 의미 없음 | **일치** — 2차 글(3자 포맷 분석) `file-format.md` |
 | EOCD 뒤 **148바이트** 푸터 | "컴팩트 end-tag 레코드가 ZIP EOCD 뒤에 덧붙음(압축 해제 없이 읽기 위함)". 크기: 픽스처 A **144**, B·C **148**(길이 0 선택 문자열 포함 시). 고정 서명 문자열로 끝남. 내용: format_version, note id, 타임스탬프, 치수, 앱 이름·버전, minimum_format_version, 마지막 본 페이지 | **일치(148은 현행 변형)** |
 | zip general-purpose flag 0x0806 / version-made-by 0 / external-attr 0 | 공개 문서에 **언급 없음** | 실측 고유 — 유지 |
 | 무결성 해시 검증 없음 | 해시는 **존재**한다: `note.note` 끝 SHA-256(앞 전부), 같은 값이 `pageIdInfo.dat` 선두; 페이지 끝 32바이트 해시 + 26바이트 서명; 객체/레이어/페이지 해시는 "UUID+수정시각" 기반 논리식. **삼성노트가 가져오기 때 검증하는지는 문서가 말하지 않음** | 실측(검증 안 함)과 모순 없음 — "해시는 있으나 미검증"으로 정리 |
-| 획 100% 벡터 파싱(필압·틸트·색·굵기) | 점 수 + 압축/원시. 압축: 첫 점 절대 시드 + 델타. 좌표 델타 **1/32** 정밀(16비트 워드: 부호 1 + 정수 10 + 소수 5비트), 압력·틸트·방위 델타 **1/4096**, 타임스탬프 uint16 델타(ms 모드 옵션). 속성 비트: 압축·틸트/방위 유무·지우개·고정폭·ms·탑레이어. 스타일 필드: **펜 이름 string-table ID(필드 7)**, 고급설정 ID(필드 1, 예 `"2;"` → Marker2 V2), ARGB(저장 순서 B,G,R,A), 크기, 고정폭. 86획 검증 바운딩박스 충전 중앙값 100%, 최악 96.7% | **일치** — 2차 글 `file-format.md`, bxff `RESEARCH.md` |
-| Android MIME `application/spd` | APK smali에 `const-string "application/spd"` 존재 | **일치** — 1차 관찰 |
+| 획 100% 벡터 파싱(필압·틸트·색·굵기) | 점 수 + 압축/원시. 압축: 첫 점 절대 시드 + 델타. 좌표 델타 **1/32** 정밀(16비트 워드: 부호 1 + 정수 10 + 소수 5비트), 압력·틸트·방위 델타 **1/4096**, 타임스탬프 uint16 델타(ms 모드 옵션). 속성 비트: 압축·틸트/방위 유무·지우개·고정폭·ms·탑레이어. 스타일 필드: **펜 이름 string-table ID(필드 7)**, 고급설정 ID(필드 1, 예 `"2;"` → Marker2 V2), ARGB(저장 순서 B,G,R,A), 크기, 고정폭. 86획 검증 바운딩박스 충전 중앙값 100%, 최악 96.7% | **일치** — 2차 글(3자 포맷 분석) `file-format.md`, bxff `RESEARCH.md` |
+| Android MIME `application/spd` | 공개 문서에 **언급 없음** _(삭제: 디컴파일 유래 — D-020 ③: APK 문자열 대조)_ | 실측 고유 — 유지 |
 | — | 버전 마커 `format_version`/`minimum_format_version`이 노트·페이지·엔드태그에 각각, 미디어 매니페스트는 3001 경계로 레이아웃 변경(`EOFX`/`EOF`) | 추가 정보 |
 | — | 쓰기 실증: **Dietrich가 .sdocx 내보내기(페이지·획·도형·텍스트 필드·이미지·프레임) 구현**. 큰 캔버스는 삼성노트가 느려지거나 거부할 수 있음 | 1차 관찰 — Dietrich README |
 
@@ -215,7 +206,7 @@
 | 리포 | 언어 | 라이선스 | ★ | 생성 / 갱신 | 범위·구조 | 등급 |
 |---|---|---|---|---|---|---|
 | squ1dd13/sdocx2pdf | Rust | **MIT** | 50 | 2026-02-18 / 2026-10-20 | `sdocx/`(파서 크레이트: lib, doc, note_doc, page, page_list, media_info, bits, byte_stream, context, end_tag) + `sdocx2pdf/`(바이너리, krilla PDF 1.7). 곡률 기반 키포인트 → 베지에, 일부 펜은 압력→폭. 지원: 손글씨·도형·임베디드 PDF(검색 가능 텍스트 보존)·JPEG·pageless 분할·펜 폭 배율. 미지원: 타이핑 텍스트·링크·페인팅·`.spi`, 캘리그라피≈만년필, 연필/브러시/잉크펜 미구분, 점선 실선화, Tab S11만 테스트. 191 커밋 | 1차 관찰 |
-| twangodev/sdocx | Rust + WASM + TS | **GPL-3.0** | 31 | 2026-03-07 / 2026-10-22 | `crates/{sdocx, sdocx-cli, sdocx-wasm}`, `web/`(로컬 뷰어), `conformance/`, `tools/apktool`, `docs/reverse-engineering/` **120+ 문서**(펜·예측기·신경망·spi 코덱·PDF). 출력 SVG(기본)/PNG/PDF. crates.io `sdocx`,`sdocx-cli`, npm `@twango/sdocx`. 쓰기 미지원. 1,395 커밋. 렌더링 매트릭스: Fountain V14/V16, DefaultPen 0~3, Marker2/4 V8, Calligraphy V1(메시), InkPen V1/V4, MagicPen, Oblique 부분 지원; AirBrush/BrushPen/Crayon2 근사; **Rainbow·지우개·직선화·라이브 예측은 재현 안 함** | 1차 관찰 + 2차 글 |
+| twangodev/sdocx | Rust + WASM + TS | **GPL-3.0** | 31 | 2026-03-07 / 2026-10-22 | `crates/{sdocx, sdocx-cli, sdocx-wasm}`, `web/`(로컬 뷰어), `conformance/`, `docs/`(파일 포맷·spi 코덱·PDF 분석 문서; **APK·네이티브 정적 분석 문서는 참조 안 함 — D-020 ③**). 출력 SVG(기본)/PNG/PDF. crates.io `sdocx`,`sdocx-cli`, npm `@twango/sdocx`. 쓰기 미지원. 1,395 커밋. 렌더링 매트릭스: Fountain V14/V16, DefaultPen 0~3, Marker2/4 V8, Calligraphy V1(메시), InkPen V1/V4, MagicPen, Oblique 부분 지원; AirBrush/BrushPen/Crayon2 근사; **Rainbow·지우개·직선화·라이브 예측은 재현 안 함** | 1차 관찰 + 2차 글 |
 | Downhillghost/Dietrich | Python | **MIT** | 6 | 2026-04-19 / 2026-09-28 | Kaitai Struct 스펙에서 생성한 파서. 읽기: 페이지·획(점별 압력·시간)·리치텍스트·텍스트필드·이미지·PDF 배경·`.spi` 메타. **쓰기: .sdocx / Excalidraw / PNG**. 키보드 텍스트 스케일은 경험식(720폭 1.6, 961폭 3.2, 1080폭 2.19) | 1차 관찰 |
 | bxff/samsung-notes-format | Python | **MIT** | 4 | 2025-10-08 / 2026-09-25 | 획 기하 전용(`render.py` ~190줄 SVG). RESEARCH.md에 델타 디코드 상세. 압력·틸트·색은 twangodev로 안내. "삼성 바이너리·디컴파일 미사용" 명시 | 1차 관찰 |
 | DomHeadroom/sdocx-hexpatterns | ImHex | **GPL-2.0** | 3 | 2025-02-22 / 2026-09-03 | `mediaInfo.hexpat`, `pageIdInfo.hexpat` | 1차 관찰 |
@@ -225,7 +216,7 @@
 | Mhemd139/Samsung_Notes | TS | 미확인 | 9 | 2026-09-30 / 2026-10-22 | PWA 뷰어 + 읽기 전용 MCP 서버 | 검색 메타만 |
 | ashwalk33r/samsung-notes-sdoc-parser | 셸 | MIT | 0 | 2020-01-31 | **.sdoc 파서가 아님** — 내보낸 PDF를 OCR(ocrmypdf) | 1차 관찰 |
 
-**.sdoc / .snb 관계**: APK 상수에 `.sdoc`(구 Samsung Notes)와 `.sdocx`가 함께 남아 있음(`Extension$Document._SDOC/_SDOCX`) — 1차 관찰. `.snb`(S Note) 파서/변환기 GitHub 검색 **0건** → 자료 부족. `.sdoc` 내부 구조 공개 분석도 찾지 못함.
+**.sdoc / .snb 관계**: `.sdoc`(구 Samsung Notes)와 `.sdocx`의 관계는 공개 자료 **부족** _(삭제: 디컴파일 유래 — D-020 ③: APK 확장자 상수)_. `.snb`(S Note) 파서/변환기 GitHub 검색 **0건** → 자료 부족. `.sdoc` 내부 구조 공개 분석도 찾지 못함.
 
 ### 5c. 판정
 
@@ -250,16 +241,16 @@
 
 ## 7. 가져올 원리 (3~5)
 
-1. **Wet/Dry 2층 + 프론트버퍼는 wet 층만.** 삼성(`SpenFbrDrawPad`)·androidx.ink(`InProgressStrokesView`→HWUI 핸드오프)·사례 앱(len, Mente, ReveriePaint) 모두 같은 구조. 진행 획만 프론트버퍼, 펜업에 `commit()`, 완료 획은 **같은 UI 프레임**에 dry 층으로 옮긴 뒤 제거(깜빡임 방지). 전체화면·팬·줌은 절대 프론트버퍼로 하지 않는다.
-2. **예측은 "다음 VSync 표시 시점"을 목표로, 길이는 점진 램프.** 삼성은 16~23 ms 지평을 쓰되 획 초반엔 1샘플부터 늘린다. Platen: 기본 OFF(실측)로 시작하되, 켤 때는 ① `MotionPredictor.isPredictionAvailable`/라이브러리 ② 예측 길이 램프 ③ `predictionFadeOutBehavior`류 페이드 ④ 설정 화면에 노출(BRIEF 3R) — 이렇게 설계해 "밀림"을 없앤다.
-3. **입력 파이프라인 규칙**: `ACTION_DOWN`에 `requestUnbufferedDispatch` → historical 샘플 전부 소비 → 압력은 1 초과 정규화·엔진은 커브 미적용(커브는 브러시 단계, 삼성과 동일) → `FLAG_CANCELED`(API 33)/`ACTION_CANCEL`로 마지막 획 취소(`TOOL_TYPE_PALM`은 못 씀) → 핸들러에서 할당 금지.
-4. **브러시 = 패밀리 + (색·크기·epsilon) 분리 저장, 크기는 레벨(1~100)→문서 상대 px.** 삼성의 레벨 보간(짧은 변 비례, 0.4~800 클램프)과 ink의 "패밀리 enum만 저장" 권고가 같은 방향. Procreate/ABR 임포터의 착지점은 ink `BrushFamily`(1.1.0-alpha03 공개 API) 또는 자체 모델이지만, 직렬화는 패밀리 ID 참조로.
+1. **Wet/Dry 2층 + 프론트버퍼는 wet 층만.** androidx.ink(`InProgressStrokesView`→HWUI 핸드오프)·공식 코드랩·사례 앱(len, Mente, ReveriePaint) 모두 같은 구조. _(삭제: 디컴파일 유래 — D-020 ③: 삼성 내부 클래스 근거)_ 진행 획만 프론트버퍼, 펜업에 `commit()`, 완료 획은 **같은 UI 프레임**에 dry 층으로 옮긴 뒤 제거(깜빡임 방지). 전체화면·팬·줌은 절대 프론트버퍼로 하지 않는다.
+2. **예측은 "다음 프레임 렌더 시점"을 목표로(motionprediction 공식 동작), 길이는 점진 램프.** _(삭제: 디컴파일 유래 — D-020 ③: 삼성 예측 지평·램프 수치)_ Platen: 기본 OFF(실측)로 시작하되, 켤 때는 ① `MotionPredictor.isPredictionAvailable`/라이브러리 ② 예측 길이 램프 ③ `predictionFadeOutBehavior`류 페이드 ④ 설정 화면에 노출(BRIEF 3R) — 이렇게 설계해 "밀림"을 없앤다.
+3. **입력 파이프라인 규칙**: `ACTION_DOWN`에 `requestUnbufferedDispatch` → historical 샘플 전부 소비 → 압력은 1 초과 정규화·엔진은 커브 미적용(커브는 브러시 단계) → `FLAG_CANCELED`(API 33)/`ACTION_CANCEL`로 마지막 획 취소(`TOOL_TYPE_PALM`은 못 씀) → 핸들러에서 할당 금지.
+4. **브러시 = 패밀리 + (색·크기·epsilon) 분리 저장, 크기는 문서 상대 단위(ink: world unit = dp).** ink의 "패밀리 enum만 저장" 권고와 같은 방향. _(삭제: 디컴파일 유래 — D-020 ③: 삼성 레벨 보간·클램프 수치)_ Procreate/ABR 임포터의 착지점은 ink `BrushFamily`(1.1.0-alpha03 공개 API) 또는 자체 모델이지만, 직렬화는 패밀리 ID 참조로.
 5. **파일 컨테이너**: ZIP + 페이지별 바이너리 + 델타 압축 획(좌표 1/32, 압력 1/4096, 시간 uint16 델타) + **EOCD 뒤 요약 푸터**(압축 해제 없이 메타 읽기) + 페이지 해시. Platen 자체 포맷·Drive 동기화의 "빠른 목록/썸네일"에 그대로 유효.
 
 ## 8. 버릴 것
 
-- 삼성식 **기기 모델 하드코딩 분기**(SM-P61·SM-T39) — Platen은 Tab S9+ 단일 타깃, 설정으로 노출.
-- **펜 30여 종 레지스트리와 `.spi` 전용 코덱** — 1차 펜 4종(펜·만년필·연필·형광펜)+임포트로 대체.
+- _(삭제: 디컴파일 유래 — D-020 ③: 기기 모델 하드코딩 분기)_ Platen은 기기 분기 대신 설정으로 노출(원칙만 유지).
+- **펜 종류 수 경쟁과 `.spi` 전용 코덱** — 1차 펜 4종(펜·만년필·연필·형광펜)+임포트로 대체.
 - **압력 커브·스무딩 설정 없음**(삼성) — BRIEF는 사용자 조절이 확정.
 - **형광펜 다크 모드 비가시** — BRIEF 제약(형광펜이 다크에서도 보일 것)과 정면 충돌. 혼합 모드(multiply)만 쓰지 말고 다크 테마에서 screen/alpha 전환 설계.
 - `GLFrontBufferedRenderer` 직접 OpenGL 경로 — 스톡 조합은 `CanvasFrontBufferedRenderer`/ink 쪽이 유지보수 중(1.1.0-beta01 수정 다수). Flutter 선택 시에도 네이티브 wet 층은 Canvas 계열로.
@@ -309,9 +300,9 @@
 - google/ink — https://github.com/google/ink
 - 코드랩 리포 — https://github.com/android/large-screen-codelabs/tree/main/advanced-stylus ; palm-rejection — https://github.com/android/large-screen-codelabs/tree/main/advanced-stylus/palm-rejection
 - platform-samples UI 목록 — https://github.com/android/platform-samples/tree/main/samples/user-interface ; snippets touchinput — https://github.com/android/snippets/tree/main/compose/snippets/src/main/java/com/example/compose/snippets/touchinput
-- Yanndroid/Samsung-Notes-Port — https://github.com/Yanndroid/Samsung-Notes-Port (클래스·문자열 존재는 GitHub 코드 검색 결과로 확인)
+- Yanndroid/Samsung-Notes-Port — **삭제됨(참조 안 함)** — 디컴파일 smali 리포, D-020 ③
 - squ1dd13/sdocx2pdf — https://github.com/squ1dd13/sdocx2pdf ; src — https://github.com/squ1dd13/sdocx2pdf/tree/master/sdocx/src
-- twangodev/sdocx — https://github.com/twangodev/sdocx ; README raw — https://raw.githubusercontent.com/twangodev/sdocx/main/README.md ; crates — https://github.com/twangodev/sdocx/tree/main/crates ; docs — https://github.com/twangodev/sdocx/tree/main/docs ; RE 목록 — https://github.com/twangodev/sdocx/tree/main/docs/reverse-engineering
+- twangodev/sdocx — https://github.com/twangodev/sdocx ; README raw — https://raw.githubusercontent.com/twangodev/sdocx/main/README.md ; crates — https://github.com/twangodev/sdocx/tree/main/crates ; docs — https://github.com/twangodev/sdocx/tree/main/docs
 - bxff/samsung-notes-format — https://github.com/bxff/samsung-notes-format ; RESEARCH.md — https://github.com/bxff/samsung-notes-format/blob/main/RESEARCH.md
 - DomHeadroom/sdocx-hexpatterns — https://github.com/DomHeadroom/sdocx-hexpatterns
 - Downhillghost/Dietrich — https://github.com/Downhillghost/Dietrich
@@ -326,20 +317,14 @@
 - nahkd123/FrontBufferDraw — https://github.com/nahkd123/FrontBufferDraw
 - (코드 검색 결과만) Satwik-Miyyapuram/weaveforge, jr-mccoy/AI-Chat-Sandbox, flandyw/folio, h3c-hexin/Android_WriteBoard, OmarIhsan/Malhoutha — GitHub code search `GLFrontBufferedRenderer` / `CanvasFrontBufferedRenderer` / `"application/spd"`
 
-**2차 글 (twangodev/sdocx 리버스 엔지니어링 노트, raw)**
+**2차 글(3자 포맷 분석) — twangodev/sdocx 파일 포맷 문서(raw, 사용자 소유 .sdocx 바이트 분석)**
 - https://github.com/twangodev/sdocx/blob/main/docs/reverse-engineering/README.md
 - https://github.com/twangodev/sdocx/blob/main/docs/reverse-engineering/file-format.md
 - https://github.com/twangodev/sdocx/blob/main/docs/reverse-engineering/integrity-findings.md
-- https://github.com/twangodev/sdocx/blob/main/docs/reverse-engineering/motion-event-adapter-findings.md
-- https://github.com/twangodev/sdocx/blob/main/docs/reverse-engineering/pen-selection-findings.md
-- https://github.com/twangodev/sdocx/blob/main/docs/reverse-engineering/pen-size-findings.md
 - https://github.com/twangodev/sdocx/blob/main/docs/rendering-support.md
-- https://raw.githubusercontent.com/twangodev/sdocx/main/docs/reverse-engineering/neural-model-findings.md
-- https://raw.githubusercontent.com/twangodev/sdocx/main/docs/reverse-engineering/predictor-timing-findings.md
-- https://raw.githubusercontent.com/twangodev/sdocx/main/docs/reverse-engineering/prediction-length-findings.md
-- https://raw.githubusercontent.com/twangodev/sdocx/main/docs/reverse-engineering/predictor-device-policy-findings.md
-- https://raw.githubusercontent.com/twangodev/sdocx/main/docs/reverse-engineering/fountain-v14.md
-- https://raw.githubusercontent.com/twangodev/sdocx/main/docs/reverse-engineering/inkpen2-input-findings.md
+
+**삭제됨(참조 안 함) — twangodev/sdocx APK·네이티브 정적 분석 문서 (D-020 ③)**
+- motion-event-adapter-findings.md · pen-selection-findings.md · pen-size-findings.md · pen-opacity-findings.md · neural-model-findings.md · predictor-timing-findings.md · prediction-length-findings.md · predictor-device-policy-findings.md · fountain-v14.md · inkpen2-input-findings.md
 
 **(스니펫) — 검색 결과 요약만, 원문 미열람**
 - Samsung 지원: How to use Samsung Notes — https://www.samsung.com/in/support/mobile-devices/how-to-use-samsung-notes/ ; PDF 가져오기/내보내기 — https://www.samsung.com/us/support/answer/ANS10002404/ ; S Pen 설정 — https://www.samsung.com/us/support/answer/ANS10003217/ ; Note8 S Pen(4096) — https://www.samsung.com/sg/support/mobile-devices/what-are-the-new-improvements-for-s-pen-in-samsung-galaxy-note8
@@ -351,3 +336,43 @@
 - AndroidCentral Tab S9 vs S8 — https://www.androidcentral.com/tablets/samsung-galaxy-tab-s9-vs-galaxy-tab-s8 ; AndroidHeadlines — https://www.androidheadlines.com/?p=1056129
 - Samsung 커뮤니티: 다크 모드 — https://us.community.samsung.com/t5/Galaxy-S-Phones/Samsung-Notes-in-Dark-Mode/m-p/2011431 ; 어두운 종이 형광펜 — https://r1.community.samsung.com/t5/tablets/samsung-notes/td-p/18658456/page/2 ; 필압 — https://r1.community.samsung.com/t5/tablets/s-pen-sensitivity/td-p/2870358 , https://r1.community.samsung.com/t5/tablets/anyone-else-notice-a-change-to-the-pen-stroke-in-notes-since-a/m-p/31975559 ; 스무딩 — https://r1.community.samsung.com/t5/support/samsung-notes-app-not-responding-well-to-long-quick-strokes/m-p/30274740 ; 즐겨찾는 펜 폴더 — https://eu.community.samsung.com/t5/suggestions/favourite-pen-folders-in-notes/m-p/7028521 ; 레이저 포인터 — https://eu.community.samsung.com/t5/mobile-apps-services/neuer-laserpointer-in-der-notes-app/td-p/11850692
 - Shapr3D 포럼(앱별 지연 차이) — https://discourse.shapr3d.com/t/surface-pen/1120
+
+## 11. 정리 기록 (D-020 ③, 2026-10-24)
+
+색인은 `feature-matrix.md` §6-2(M1~M36, 줄 번호는 정리 전 기준). 판단 규칙: "메모 명시"·"동류" = 삭제 / "경계" = 출처가 사용자 소유 `.sdocx` 파일의 바이트 분석(twangodev `file-format`·`integrity`·`rendering-support`, bxff)이면 유지하고 등급 "2차 글(3자 포맷 분석)", APK 디컴파일(Yanndroid smali)·네이티브 정적 분석(twangodev `*-findings`, `fountain-v14`) 유래면 삭제.
+
+| # | 처리 | 근거 |
+|---|---|---|
+| M1 | 메모 블록 → "정리 완료" 한 줄로 교체 | 규칙 4 |
+| M2 | 등급 범례에서 "디컴파일 APK 클래스/문자열 존재 여부" 삭제, "2차 글(3자 포맷 분석)" 추가 | 메모(범례 정합) |
+| M3 | 준수 고지 문구 재작성(디컴파일 리포 참조 안 함) | 메모 |
+| M4 | 삭제(§1 패키지 경로) | 메모 명시(클래스명) |
+| M5 | 행 삭제(포트 리포 존재 근거). "갤럭시 전용"은 스토어 사실로 플랫폼 행에 유지 | 동류 |
+| M6 | 행 삭제(RE 참조 APK 버전 4.4.45.37) | 동류 |
+| M7~M12 | §2a 표 행 삭제(프론트버퍼 드로우패드·예측 토글·VSync 전달·신경망 예측기 수치·예측 타이밍·점진 램프) + "핵심 발견" 문장 삭제 | 메모 명시 |
+| M13~M15 | §2a 표 행 삭제(InkPen2 입력 경로·MotionEvent 어댑터·기기 정책) — 삭제 행 합계 9 | 동류(네이티브 정적 분석) |
+| M16 | "추정 종합" 재작성 — 하드웨어·공식 API 가능성·Shapr3D 커뮤니티 관찰만 남김 | 경계 — M7~M12에 의존하는 추론이라 디컴파일 유래 부분 삭제, 비디컴파일 부분 유지 |
+| M17 | §3 행 삭제(내부 펜 레지스트리) | 동류(pen-selection) |
+| M18 | §3 행 삭제(굵기 레벨 보간·클램프) | 동류(pen-size) |
+| M19 | §3 행 삭제(Fountain V14 모델) | 동류(fountain-v14) |
+| M20 | §3 행 삭제(펜별 불투명도) — §3 삭제 행 합계 4 | 동류(pen-opacity) |
+| M21 | 부분 삭제 — "UI 없음"(스니펫) 유지, "어댑터 무변환 → 엔진 고정값" 추론 삭제 | 경계 |
+| M22 | 삭제(삼성 램프·리셋 재인용). androidx.ink `predictionFadeOutBehavior` 유지 | 메모 명시 |
+| M23 | 삭제(`SelectPen` 내부 펜). `.spi` 크롭(FizzyHedgehog) 유지 | 동류 |
+| M24 | **유지**, 등급 "2차 글(3자 포맷 분석)" | 경계 — 객체 타입 ID는 페이지 레코드에 저장되는 값으로 `rendering-support.md`가 파일 렌더 지원 매트릭스로 정리한 것. 파일 포맷 사실이지 APK 코드 사실이 아님 |
+| M25 | 삭제(`Beautify` 펜) | 동류 |
+| M26 | 삭제(`LaserPen`) | 동류 |
+| M27 | **유지**(M24와 동일 근거), 등급 재표기 | 경계 |
+| M28 | 삭제(APK smali 문자열 대조). 실측 MIME 사실은 "실측 고유 — 유지" | 메모 명시 |
+| M29 | 삭제(APK 확장자 상수) | 동류 |
+| M30 | 삭제(§7-2 삼성 지평·램프 문장). Platen 설계(기본 OFF·램프·페이드·설정 노출)는 자체 설계로 유지, 목표 시점 근거를 motionprediction 공식 동작으로 교체 | 메모 명시 |
+| M31 | 삭제(§7-4 삼성 레벨 보간 문장). 크기 단위 근거를 ink 공식 문서(world unit = dp)로 교체 | 동류(M18 재인용) |
+| M32 | 삭제(§8 SM-P61·SM-T39). "설정으로 노출" 원칙만 유지 | 동류(M15 재인용) |
+| M33 | 삭제(§8 "펜 30여 종 레지스트리" → "펜 종류 수 경쟁") | 동류(M17 재인용) |
+| M34 | **유지** — LOCAL_TODO ①의 "삼성노트 설정의 예측 토글 유무 기록" | 경계 — 사용자가 자기 기기 설정 화면을 보고 기록하는 실측 항목. 디컴파일 결과를 인용하지 않으며 UI 관찰로 독립 성립 |
+| M35 | 출처 목록 분리 — `file-format`·`integrity-findings`·`rendering-support`·README는 "2차 글(3자 포맷 분석)"으로 유지, `*-findings` 9건·`fountain-v14`는 "삭제됨(참조 안 함)" | 메모 명시/동류 — 문서별로 파일 분석과 APK·네이티브 분석을 분리 |
+| M36 | 출처 목록 Yanndroid → "삭제됨(참조 안 함)" | 메모 명시 |
+
+**유지 판정 재확인**: 공식 Android API(§2c 전체) · MIT/GPL 파서 기반 `.sdocx` 판정(§5, 파일 포맷 사실) · 이전 프로젝트 실측(§3 기본 펜 1.2배·테이퍼 0.58~0.85·캘리 141°/0.39, §5a) · 공개 스니펫(2.8 ms·4096 레벨·커뮤니티) — 전부 손대지 않음.
+
+**등급 분포 변화**: "1차 관찰(디컴파일 클래스·문자열)" 소멸(0건) · twangodev 유래 "2차 글" 중 파일 포맷 문서는 "2차 글(3자 포맷 분석)"으로 재표기, 정적 분석 문서 유래는 삭제 · 새로 "자료 부족"이 된 항목: 삼성노트 내부 저지연 구조, 내부 펜 종류 수·렌더 모델·굵기 보간·불투명도, 압력 커브 내부 처리, 올가미 UI, `.sdoc` 관계, 비삼성 기기 지원 공식 근거.
