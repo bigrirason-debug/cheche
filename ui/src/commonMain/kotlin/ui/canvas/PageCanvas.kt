@@ -100,7 +100,12 @@ fun PageCanvas(
     val swipeMin = with(density) { 64.dp.toPx() }
     vp.marginPx = with(density) { 24.dp.toPx() }
     vp.updateLayout(PageLayout.of(controller.note))
+    // 젖은 잉크 프론트버퍼(Android). 형광펜·반투명은 겹침이 진해지므로 Compose 경로만 쓴다.
+    val wetHolder = remember { arrayOfNulls<WetInkOverlay>(1) }
+    val wetEnabled = state.settings.ink.frontBuffer && !mouseDraw
 
+    Box(Modifier.fillMaxSize()) {
+    WetInkLayer(wetEnabled, Modifier.fillMaxSize()) { wetHolder[0] = it }
     Box(
         modifier
             .fillMaxSize()
@@ -117,11 +122,29 @@ fun PageCanvas(
                     var buttonSession = false
                     var stylusActive = false
                     val recognizer = FingerGestureRecognizer(touchSlop, swipeMin)
+                    var wetLast: Offset? = null
+                    var wetArgb = 0
+                    fun wetWidth(pressure: Float): Float {
+                        val b = state.liveBuilder ?: return 0f
+                        val lut = b.params.pressureSizeLut
+                        val k = lut[(pressure.coerceIn(0f, 1f) * (lut.size - 1)).toInt()]
+                        return (b.params.size * k * vp.scale).coerceAtLeast(1f)
+                    }
+                    fun wetTo(x: Float, y: Float, pressure: Float) {
+                        val w = wetHolder[0] ?: return
+                        val from = wetLast ?: Offset(x, y)
+                        if (wetArgb != 0) w.segment(from.x, from.y, x, y, wetWidth(pressure), wetArgb)
+                        wetLast = Offset(x, y)
+                    }
 
                     fun endSession(canceled: Boolean, now: Long) {
                         val s = session; val sl = slot
                         when (s) {
-                            is Session.Pen -> if (canceled) state.cancelStroke() else state.finishStroke()
+                            is Session.Pen -> {
+                                if (canceled) state.cancelStroke() else state.finishStroke()
+                                if (wetLast != null) wetHolder[0]?.clearAfterDry()
+                                wetLast = null
+                            }
                             Session.Erase -> if (canceled) state.finishErase() else state.finishErase()
                             Session.Lasso -> state.lassoUp()
                             Session.Laser -> {}
@@ -206,6 +229,14 @@ fun PageCanvas(
                                             tool == Tool.Pen -> {
                                                 val pt0 = extra.points.first()
                                                 val ok = state.beginStroke(state.selectedSlot, sl, InputSample(p.x, p.y, pt0.pressure, pt0.tiltX, pt0.tiltY, 0f), pt0.timeMs)
+                                                if (ok) {
+                                                    val b = state.liveBuilder
+                                                    val opaque = b != null && b.params.spec.role != io.github.bigrirason_debug.platen.model.BrushRole.highlighter &&
+                                                        b.params.spec.blend == io.github.bigrirason_debug.platen.model.BlendMode.normal && b.params.opacity >= 0.99f
+                                                    wetArgb = if (opaque) io.github.bigrirason_debug.platen.render.InkColorPolicy.remapInk(state.liveColor, b!!.params.spec.role, inkTheme) else 0
+                                                    wetLast = null
+                                                    if (wetArgb != 0) { wetHolder[0]?.penDown(event); wetTo(pt0.x, pt0.y, pt0.pressure) }
+                                                }
                                                 if (ok) Session.Pen(state.selectedSlot) else null
                                             }
                                             tool == Tool.Eraser -> { state.beginErase(sl); state.eraseAt(p); Session.Erase }
@@ -227,7 +258,10 @@ fun PageCanvas(
                                         val sl = slot
                                         if (sl != null) {
                                             when (session) {
-                                                is Session.Pen -> state.extendStroke(extra.points.map { rp -> val lp = vp.hitLoose(Offset(rp.x, rp.y), sl); InputSample(lp.x, lp.y, rp.pressure, rp.tiltX, rp.tiltY, state.strokeTime(rp.timeMs)) })
+                                                is Session.Pen -> {
+                                                extra.points.forEach { rp -> wetTo(rp.x, rp.y, rp.pressure) }
+                                                state.extendStroke(extra.points.map { rp -> val lp = vp.hitLoose(Offset(rp.x, rp.y), sl); InputSample(lp.x, lp.y, rp.pressure, rp.tiltX, rp.tiltY, state.strokeTime(rp.timeMs)) })
+                                            }
                                                 else -> {}
                                             }
                                         }
@@ -245,7 +279,10 @@ fun PageCanvas(
                                         val sl = slot ?: continue
                                         if ((ch.position - downPos).getDistance() > touchSlop / 2) moved = true
                                         when (val s = session) {
-                                            is Session.Pen -> state.extendStroke(extra.points.map { rp -> val lp = vp.hitLoose(Offset(rp.x, rp.y), sl); InputSample(lp.x, lp.y, rp.pressure, rp.tiltX, rp.tiltY, state.strokeTime(rp.timeMs)) })
+                                            is Session.Pen -> {
+                                                extra.points.forEach { rp -> wetTo(rp.x, rp.y, rp.pressure) }
+                                                state.extendStroke(extra.points.map { rp -> val lp = vp.hitLoose(Offset(rp.x, rp.y), sl); InputSample(lp.x, lp.y, rp.pressure, rp.tiltX, rp.tiltY, state.strokeTime(rp.timeMs)) })
+                                            }
                                             Session.Erase -> extra.points.forEach { rp -> state.eraseAt(vp.hitLoose(Offset(rp.x, rp.y), sl)) }
                                             Session.Lasso -> {
                                                 val p = vp.hitLoose(ch.position, sl)
@@ -309,6 +346,7 @@ fun PageCanvas(
                 }
             }
         }
+    }
     }
 }
 

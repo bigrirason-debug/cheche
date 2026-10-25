@@ -141,3 +141,9 @@
   4. **동기화 dirty = 내용 해시**: `DirectoryLocalNoteStore` 가 파일 md5 ≠ 마지막 동기화 md5 이면 dirty. 편집 화면→동기화 신호 배선이 필요 없고 데이터 손실 위험이 낮다. 원격 반영(writeBytes)은 dirty 로 세지 않음.
   5. **Android 웹 클라이언트 ID** 는 빌드 시 `-Pplaten.webClientId`(CI 시크릿 `PLATEN_WEB_CLIENT_ID`) → `resValue`. 없으면 동기화 UI 는 안내만, 앱은 로컬로 동작.
   6. **undo z-순서 버그 수정**: RemoveStrokes/Objects 가 되살릴 때 맨 뒤에 붙이던 것을 원래 위치로(`prepare`).
+
+## D-026 · 2026-10-25 · Android 젖은 잉크 = graphics-core 프론트버퍼 오버레이
+- 결정: `WetInkLayer`(expect) — Android 는 `CanvasFrontBufferedRenderer` 로 **원시 입력 샘플**(히스토리 포함)을 바로 선분으로 그리고, 펜 업 2프레임 뒤 지운다. 마른 잉크는 기존 Compose 렌더러. SurfaceView 는 캔버스 아래 형제 + `setZOrderOnTop(true)`(입력은 Compose 가 받음). 펜 다운 시 `requestUnbufferedDispatch`.
+- 제외: 형광펜·반투명·multiply 브러시(겹침이 진해짐) → Compose 경로만. 데스크톱은 없음.
+- 검증: 컴파일은 CI, 효과는 LOCAL_TODO S1(진단 화면 "프론트버퍼 렌더링" 토글 on/off 비교). 문제가 있으면 토글로 끈다.
+- 리스크: 젖은 잉크(원시 샘플·원형 캡 선분)와 마른 잉크(스무딩·테이퍼 외곽선)의 미세한 차이로 펜 업 순간 "스냅"이 보일 수 있음 → 실측 후 스무딩 일부를 오버레이에도 적용할지 결정.
