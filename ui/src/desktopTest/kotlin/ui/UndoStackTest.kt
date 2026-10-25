@@ -27,7 +27,7 @@ class UndoStackTest {
         s.push(9) // 새 push 는 redo 를 비운다
         assertFalse(s.canRedo)
         assertNull(s.popRedo())
-        assertEquals(9, s.popUndo()); assertEquals(1, s.popUndo()); assertNull(s.popUndo())
+        assertEquals(9, s.popUndo()); assertEquals(2, s.popUndo()); assertEquals(1, s.popUndo()); assertNull(s.popUndo())
     }
 
     @Test
@@ -53,7 +53,7 @@ class UndoStackTest {
         assertTrue(c.redo()); assertEquals(listOf("s1", "s2"), c.page.strokes.map { it.id })
         assertTrue(c.redo()); assertEquals(1, c.page.objects.size)
         assertFalse(c.redo())
-        assertEquals(4L + 2L + 2L, c.dirtyGeneration) // 3 execute + 2 undo + 2 redo = 7 → 실제 값 검증
+        assertEquals(7L, c.dirtyGeneration) // 3 execute + 2 undo + 2 redo
     }
 
     @Test
@@ -64,6 +64,15 @@ class UndoStackTest {
         assertEquals(0, c.page.strokes.size)
         c.undo()
         assertEquals(listOf("a", "b"), c.page.strokes.map { it.id })
+    }
+
+    @Test
+    fun removeMiddleStrokeUndoKeepsZOrder() {
+        val note = Note("n", "t", 0, 0, listOf(Page("p", strokes = listOf(stroke("a", 0f), stroke("b", 50f), stroke("c", 90f)))))
+        val c = EditorController(note)
+        c.execute(EditCommand.RemoveStrokes("p", listOf(c.page.strokes[1])))
+        c.undo()
+        assertEquals(listOf("a", "b", "c"), c.page.strokes.map { it.id })
     }
 
     @Test

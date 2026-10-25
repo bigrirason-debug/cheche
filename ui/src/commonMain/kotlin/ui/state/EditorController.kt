@@ -37,8 +37,9 @@ class EditorController(initial: Note, private val history: UndoStack<EditCommand
     val pageCount: Int get() = note.pages.size
 
     fun execute(cmd: EditCommand) {
-        note = cmd.apply(note).copy(modified = nowMillis())
-        history.push(cmd)
+        val prepared = cmd.prepare(note)
+        note = prepared.apply(note).copy(modified = nowMillis())
+        history.push(prepared)
         afterChange()
     }
 

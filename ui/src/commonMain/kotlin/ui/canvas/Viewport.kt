@@ -51,8 +51,17 @@ class Viewport {
     val scale: Float get() = baseScale * zoom
     private val baseScale: Float get() = if (layout.width <= 0f || size.width <= 0) 1f else (size.width - 2 * marginPx) / layout.width
 
-    fun updateLayout(l: PageLayout) { if (l != layout) { layout = l; clamp() } }
-    fun updateSize(s: IntSize) { size = s; clamp() }
+    private var placed = false
+
+    fun updateLayout(l: PageLayout) { if (l != layout) { layout = l; placeInitially(); clamp() } }
+    fun updateSize(s: IntSize) { size = s; placeInitially(); clamp() }
+
+    /** 처음 크기·레이아웃이 모두 정해지면 첫 페이지 상단을 여백 아래에 둔다. */
+    private fun placeInitially() {
+        if (placed || size.width == 0 || layout.slots.isEmpty()) return
+        offset = Offset(offset.x, marginPx)
+        placed = true
+    }
 
     fun toScreen(p: Pt): Offset = Offset(p.x * scale + offset.x, p.y * scale + offset.y)
     fun toDoc(o: Offset): Pt = Pt((o.x - offset.x) / scale, (o.y - offset.y) / scale)

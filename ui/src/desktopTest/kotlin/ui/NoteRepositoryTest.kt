@@ -25,10 +25,12 @@ class NoteRepositoryTest {
         val dir = tempDir()
         val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
         val gate = CompletableDeferred<Unit>()
+        val entered = CompletableDeferred<Unit>()
         var firstWriteSeen = false
-        val repo = FileNoteRepository(dir, scope, beforeWrite = { job -> if (!firstWriteSeen) { firstWriteSeen = true; gate.await() } })
+        val repo = FileNoteRepository(dir, scope, beforeWrite = { _ -> if (!firstWriteSeen) { firstWriteSeen = true; entered.complete(Unit); gate.await() } })
         val note = newBlankNote("세대")
         val d1 = repo.saveAndAwait(note.copy(title = "gen1"), 1)
+        entered.await() // 워커가 gen1 쓰기에 들어간 뒤에 후속 저장을 넣는다
         repo.save(note.copy(title = "gen2"), 2)
         val d3 = repo.saveAndAwait(note.copy(title = "gen3"), 3)
         gate.complete(Unit)
