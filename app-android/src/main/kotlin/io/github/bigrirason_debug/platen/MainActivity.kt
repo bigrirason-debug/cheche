@@ -36,7 +36,7 @@ import java.io.File
 /**
  * Android 진입점(edge-to-edge). 노트는 `filesDir/notes`, 설정은 `filesDir/settings.json`.
  * `.platen` 열기 인텐트(VIEW)는 바이트를 저장소로 들여온 뒤 캔버스로 이동.
- * TODO: LowLatencyCanvasView(graphics-core) 프론트버퍼 호스트 — 현재 일반 Compose Canvas 경로(진단 토글은 저장만 됨).
+ * 젖은 잉크 저지연: ui WetInkLayer(graphics-core 프론트버퍼, D-026).
  */
 class MainActivity : ComponentActivity() {
     private val appScope = CoroutineScope(SupervisorJob() + Dispatchers.Default)

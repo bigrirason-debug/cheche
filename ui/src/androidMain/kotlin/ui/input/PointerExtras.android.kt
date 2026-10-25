@@ -13,7 +13,7 @@ import kotlin.math.sin
  * 모두 꺼내 RawPoint 로 만든다. 좌표는 Compose 의 change.position 기준(히스토리는 현재 위치와 MotionEvent 위치의 차로 보정).
  *
  * 컨테이너에서는 컴파일되지 않는다(CI 전용, D-020 ⑤) — API 레퍼런스: developer.android.com MotionEvent.
- * TODO: LowLatencyCanvasView(graphics-core 프론트버퍼) 호스트 연결 — 현재는 일반 Compose Canvas 경로.
+ * 젖은 잉크 프론트버퍼는 ui/canvas/WetInk.android.kt(D-026).
  */
 actual object PlatformPointerExtras {
     actual fun describe(event: PointerEvent, change: PointerInputChange): PointerExtra {

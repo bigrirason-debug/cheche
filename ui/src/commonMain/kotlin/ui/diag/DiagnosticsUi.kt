@@ -155,7 +155,7 @@ fun DiagnosticsScreen(
             SectionTitle("저지연 경로 (Android 에서만 실효)")
             ToggleRow("프론트버퍼 렌더링", ink.frontBuffer) { onInkChange(ink.copy(frontBuffer = it)) }
             ToggleRow("모션 예측", ink.motionPrediction) { onInkChange(ink.copy(motionPrediction = it)) }
-            Text("프론트버퍼(LowLatencyCanvasView) 연결은 TODO — 현재 모든 플랫폼이 일반 Compose Canvas 경로.", color = c.mutedText, style = MaterialTheme.typography.bodySmall)
+            Text("프론트버퍼: Android 는 graphics-core 젖은 잉크 오버레이(형광펜·반투명 제외). 켜고/끄고 지연을 비교하세요(LOCAL_TODO S1).", color = c.mutedText, style = MaterialTheme.typography.bodySmall)
 
             if (diag.lastMessage.isNotEmpty()) Text(diag.lastMessage, style = MonoTextStyle, color = c.red, modifier = Modifier.padding(vertical = PlatenSpacing.m))
             Text(PlatformImages.platformName, style = MonoTextStyle, color = c.mutedText, modifier = Modifier.padding(bottom = PlatenSpacing.xl))

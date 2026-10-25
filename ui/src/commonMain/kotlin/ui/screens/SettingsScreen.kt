@@ -117,7 +117,7 @@ fun SettingsScreen(env: AppEnvironment, stored: StoredSettings, onChange: (Store
                     ToggleRow("손가락 필기", s.ink.fingerDraw, "끄면 손가락은 팬/줌만") { v -> ink { it.copy(fingerDraw = v) } }
                     ToggleRow("팜 리젝션", s.ink.palmRejection, "펜 호버·접촉 중 손가락 무시") { v -> ink { it.copy(palmRejection = v) } }
                     ToggleRow("모션 예측", s.ink.motionPrediction, "Android 전용. 기본 꺼짐(밀림 체감)") { v -> ink { it.copy(motionPrediction = v) } }
-                    ToggleRow("프론트버퍼 렌더링", s.ink.frontBuffer, "Android 전용(연결 TODO)") { v -> ink { it.copy(frontBuffer = v) } }
+                    ToggleRow("프론트버퍼 렌더링", s.ink.frontBuffer, "Android 젖은 잉크 저지연") { v -> ink { it.copy(frontBuffer = v) } }
                     if (env.desktop) ToggleRow("마우스 필기 허용 (진단용)", stored.ui.mouseDraw, "기본 꺼짐 — Windows 는 올가미·이동·편집만") { v -> onChange(stored.copy(ui = stored.ui.copy(mouseDraw = v))) }
                     LabeledSlider("지우개 반지름", stored.ui.eraserRadiusPt, 2f..24f, format = { "${it.toInt()} pt" }) { v -> onChange(stored.copy(ui = stored.ui.copy(eraserRadiusPt = v))) }
                     Spacer(Modifier.height(PlatenSpacing.m))
