@@ -1,3 +1,5 @@
+@file:Suppress("DEPRECATION")
+
 package io.github.bigrirason_debug.platen.ui.components
 
 import androidx.compose.foundation.background
@@ -5,7 +7,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.align
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
@@ -72,7 +73,8 @@ fun ToolIconButton(
 @Composable
 fun PlatenTooltip(text: String, shortcut: String? = null, content: @Composable () -> Unit) {
     TooltipBox(
-        positionProvider = TooltipDefaults.rememberTooltipPositionProvider(),
+        // rememberTooltipPositionProvider() 는 m3 1.4+ 에만 있어 양쪽에 있는 API 를 쓴다(1.12 에서는 deprecated 경고만).
+        positionProvider = TooltipDefaults.rememberPlainTooltipPositionProvider(),
         tooltip = {
             PlainTooltip {
                 Row(verticalAlignment = Alignment.CenterVertically) {

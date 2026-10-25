@@ -21,10 +21,13 @@ class InMemorySettingsStore(initial: StoredSettings = StoredSettings()) : Settin
     override fun update(f: (StoredSettings) -> StoredSettings) { settings.value = f(settings.value) }
 }
 
-/** 슬롯이 비어 있으면 내장 로스터로 채운다(첫 실행). */
-fun UiPrefs.withDefaultSlots(): UiPrefs = if (slots.isNotEmpty()) this else copy(
-    slots = BuiltinBrushes.defaultSlotBrushIds.map { id ->
+object UiPrefsDefaults {
+    /** 기본 펜꽂이 5슬롯(펜·만년필·연필·모노라인·형광펜 노랑). */
+    fun slots(): List<PenSlot> = BuiltinBrushes.defaultSlotBrushIds.map { id ->
         val spec = BuiltinBrushes.all.first { it.id == id }
         PenSlot(brushId = id, size = spec.size.base, color = if (spec.role == io.github.bigrirason_debug.platen.model.BrushRole.highlighter) io.github.bigrirason_debug.platen.ui.theme.PlatenPalette.YELLOW else io.github.bigrirason_debug.platen.ui.theme.PlatenPalette.BLACK)
-    },
-)
+    }
+}
+
+/** 슬롯이 비어 있으면 내장 로스터로 채운다(첫 실행). */
+fun UiPrefs.withDefaultSlots(): UiPrefs = if (slots.isNotEmpty()) this else copy(slots = UiPrefsDefaults.slots())

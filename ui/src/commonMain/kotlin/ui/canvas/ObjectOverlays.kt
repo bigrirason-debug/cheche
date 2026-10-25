@@ -2,6 +2,7 @@ package io.github.bigrirason_debug.platen.ui.canvas
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -138,7 +139,7 @@ private fun TableCellEditor(state: CanvasState, t: PageObject.Table, slot: PageS
                 Box(
                     Modifier.offset { IntOffset((originX + cx * scale).roundToInt(), (originY + cy * scale).roundToInt()) }
                         .size(with(density) { (cw * scale).toDp() }, with(density) { (rh * scale).toDp() })
-                        .androidx.compose.foundation.clickable { state.editingCell = t.id to key },
+                        .clickable { state.editingCell = t.id to key },
                 )
                 cx += cw
             }

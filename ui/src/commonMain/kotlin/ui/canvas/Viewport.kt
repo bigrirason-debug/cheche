@@ -51,8 +51,8 @@ class Viewport {
     val scale: Float get() = baseScale * zoom
     private val baseScale: Float get() = if (layout.width <= 0f || size.width <= 0) 1f else (size.width - 2 * marginPx) / layout.width
 
-    fun setLayout(l: PageLayout) { layout = l; clamp() }
-    fun setSize(s: IntSize) { size = s; clamp() }
+    fun updateLayout(l: PageLayout) { if (l != layout) { layout = l; clamp() } }
+    fun updateSize(s: IntSize) { size = s; clamp() }
 
     fun toScreen(p: Pt): Offset = Offset(p.x * scale + offset.x, p.y * scale + offset.y)
     fun toDoc(o: Offset): Pt = Pt((o.x - offset.x) / scale, (o.y - offset.y) / scale)

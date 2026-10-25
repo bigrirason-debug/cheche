@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- DESIGN.md §1 토큰 -->
+    <color name="platen_chrome">#ECE7DC</color>
+    <color name="platen_paper">#F6F1E7</color>
+    <color name="platen_ink">#1A1A1A</color>
+    <color name="platen_red">#C8102E</color>
+</resources>

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- AppCompat 없이 시스템 머티리얼 테마. 색은 Compose(PlatenTheme)가 그린다. 윈도 배경 = 크롬 라이트 -->
+    <style name="Theme.Platen" parent="android:Theme.Material.Light.NoActionBar">
+        <item name="android:windowBackground">@color/platen_chrome</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+    </style>
+</resources>

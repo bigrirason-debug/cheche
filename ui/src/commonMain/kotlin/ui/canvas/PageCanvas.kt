@@ -28,6 +28,8 @@ import androidx.compose.ui.input.pointer.PointerEventType
 import androidx.compose.ui.input.pointer.PointerId
 import androidx.compose.ui.input.pointer.PointerInputChange
 import androidx.compose.ui.input.pointer.PointerType
+import androidx.compose.ui.input.pointer.changedToDownIgnoreConsumed
+import androidx.compose.ui.input.pointer.changedToUpIgnoreConsumed
 import androidx.compose.ui.input.pointer.isCtrlPressed
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onSizeChanged
@@ -97,12 +99,12 @@ fun PageCanvas(
     val touchSlop = with(density) { 12.dp.toPx() }
     val swipeMin = with(density) { 64.dp.toPx() }
     vp.marginPx = with(density) { 24.dp.toPx() }
-    vp.setLayout(PageLayout.of(controller.note))
+    vp.updateLayout(PageLayout.of(controller.note))
 
     Box(
         modifier
             .fillMaxSize()
-            .onSizeChanged { vp.setSize(it) }
+            .onSizeChanged { vp.updateSize(it) }
             .pointerInput(state, mouseDraw) {
                 awaitPointerEventScope {
                     val touches = HashMap<PointerId, Offset>()
