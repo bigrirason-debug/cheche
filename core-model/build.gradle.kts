@@ -13,7 +13,7 @@ if (platenAndroid) {
     // AGP 타입은 로컬(Android 미구성) 스크립트 컴파일 시 존재하지 않으므로 동적 구성한다.
     extensions.getByName("android").withGroovyBuilder {
         setProperty("namespace", "io.github.bigrirason_debug.platen.model")
-        setProperty("compileSdk", 36)
+        setProperty("compileSdk", 37)
         "defaultConfig" { setProperty("minSdk", 29) }
         "compileOptions" {
             setProperty("sourceCompatibility", JavaVersion.VERSION_17)

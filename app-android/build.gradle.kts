@@ -11,7 +11,7 @@ apply(plugin = "org.jetbrains.kotlin.android")
 
 extensions.configure<com.android.build.api.dsl.ApplicationExtension>("android") {
     namespace = "io.github.bigrirason_debug.platen"
-    compileSdk = 36
+    compileSdk = 37
     defaultConfig {
         applicationId = "io.github.bigrirason_debug.platen"
         minSdk = 29

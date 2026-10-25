@@ -64,7 +64,20 @@ fun PlatenApp(env: AppEnvironment, nav: Navigator = remember { Navigator() }, di
                 onOpen = { nav.push(Screen.Canvas(it)) },
                 onNew = { scope.launch { val n = env.notes.create("새 노트 ${notes.size + 1}"); nav.push(Screen.Canvas(n.id)) } },
                 onDelete = { id -> scope.launch { env.notes.delete(id) } },
-                onOpenFile = if (env.desktop) ({ scope.launch { env.files.pickFile("노트 열기", listOf("platen"))?.let { f -> env.notes.importBytes(f.bytes)?.let { n -> env.notes.refresh(); nav.push(Screen.Canvas(n.id)) } } } }) else null,
+                // 파일 열기: .platen 노트 또는 PDF(속지·플래너 — 원본 PDF 를 배경으로 보존, 링크 유지)
+                onOpenFile = { scope.launch {
+                    val f = env.files.pickFile("노트·PDF 열기", listOf("platen", "pdf")) ?: return@launch
+                    if (f.name.endsWith(".pdf", ignoreCase = true) || f.mime == "application/pdf") {
+                        val (pages, att) = env.pdf.importPdf(f.bytes) ?: run { loadError = "PDF 를 열 수 없습니다"; return@launch }
+                        if (pages.isEmpty()) { loadError = "빈 PDF 입니다"; return@launch }
+                        val now = io.github.bigrirason_debug.platen.model.nowMillis()
+                        val note = io.github.bigrirason_debug.platen.model.Note(io.github.bigrirason_debug.platen.model.newId(), f.name.substringBeforeLast('.'), now, now, pages)
+                        env.notes.save(note, 1L, att); env.notes.flush(); env.notes.refresh()
+                        nav.push(Screen.Canvas(note.id))
+                    } else {
+                        env.notes.importBytes(f.bytes)?.let { n -> env.notes.refresh(); nav.push(Screen.Canvas(n.id)) }
+                    }
+                } },
                 onSettings = { nav.push(Screen.Settings) },
                 onDiagnostics = { nav.push(Screen.Diagnostics) },
             )
