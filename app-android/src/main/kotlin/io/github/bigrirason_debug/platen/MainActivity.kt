@@ -13,7 +13,19 @@ import io.github.bigrirason_debug.platen.ui.Screen
 import io.github.bigrirason_debug.platen.ui.platform.AndroidPlatformFiles
 import io.github.bigrirason_debug.platen.ui.repo.FileNoteRepository
 import io.github.bigrirason_debug.platen.ui.repo.FileSettingsStore
-import io.github.bigrirason_debug.platen.ui.repo.InMemoryBrushRepository
+import io.github.bigrirason_debug.platen.sync.auth.AndroidGoogleAuth
+import io.github.bigrirason_debug.platen.sync.auth.FileDeviceIdStore
+import io.github.bigrirason_debug.platen.sync.auth.FileSyncMetaStore
+import io.github.bigrirason_debug.platen.sync.auth.androidTokenStore
+import io.github.bigrirason_debug.platen.sync.SyncClock
+import io.github.bigrirason_debug.platen.ui.repo.ModuleBrushRepository
+import io.github.bigrirason_debug.platen.ui.repo.ModulePdfFacade
+import io.github.bigrirason_debug.platen.ui.repo.RepoBrushImageStore
+import io.github.bigrirason_debug.platen.ui.sync.EngineSyncFacade
+import io.github.bigrirason_debug.platen.ui.sync.SyncWiring
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.result.IntentSenderRequest
+import io.ktor.client.engine.okhttp.OkHttp
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -31,18 +43,43 @@ class MainActivity : ComponentActivity() {
     private lateinit var notes: FileNoteRepository
     private lateinit var env: AppEnvironment
     private val nav = Navigator()
+    private var googleAuth: AndroidGoogleAuth? = null
+    /** Drive 범위 동의 화면(AuthorizationClient 해상도) 결과를 인증 객체로 돌려준다. */
+    private val resolutionLauncher = registerForActivityResult(ActivityResultContracts.StartIntentSenderForResult()) { r ->
+        googleAuth?.completeResolution(r.data)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
         notes = FileNoteRepository(File(filesDir, "notes"), appScope)
+        val brushes = ModuleBrushRepository(File(filesDir, "brushes"))
+        val settings = FileSettingsStore(File(filesDir, "settings.json"))
+        val syncDir = File(filesDir, "platen")
+        // 웹 클라이언트 ID 는 빌드 시 -Pplaten.webClientId 로 주입(LOCAL_TODO G3). 비어 있으면 동기화는 안내만 한다.
+        val webClientId = getString(R.string.platen_web_client_id)
+        val sync = EngineSyncFacade(File(filesDir, "notes"), notes, appScope, SyncWiring(
+            http = OkHttp.create(),
+            auth = {
+                if (webClientId.isBlank()) null
+                else AndroidGoogleAuth(this, webClientId, SyncClock { System.currentTimeMillis() }, onResolutionRequired = { sender ->
+                    resolutionLauncher.launch(IntentSenderRequest.Builder(sender).build())
+                }).also { googleAuth = it }
+            },
+            tokenStore = androidTokenStore(this),
+            deviceIdStore = FileDeviceIdStore(File(syncDir, "device-id")),
+            metaStore = FileSyncMetaStore(File(syncDir, "sync-meta.json")),
+            missingConfigMessage = "이 빌드에는 Google 웹 클라이언트 ID 가 없습니다(LOCAL_TODO G3: -Pplaten.webClientId)",
+        ))
         env = AppEnvironment(
             notes = notes,
-            brushes = InMemoryBrushRepository(),          // TODO(head): brush 모듈 로스터·임포터 연결
-            settings = FileSettingsStore(File(filesDir, "settings.json")),
+            brushes = brushes,
+            settings = settings,
+            sync = sync,
+            pdf = ModulePdfFacade(brushes, settings),
             files = AndroidPlatformFiles(this),
+            images = RepoBrushImageStore(brushes),
             desktop = false,
-            // sync / pdf: Noop — TODO(head): sync(Credential Manager + Drive)·pdf 모듈 연결
         )
         onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() { if (!nav.back()) { isEnabled = false; onBackPressedDispatcher.onBackPressed() } }

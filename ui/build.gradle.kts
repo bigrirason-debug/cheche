@@ -59,6 +59,7 @@ kotlin {
                 implementation(libs.compose.components.resources)
                 implementation(libs.lifecycle.runtime.compose)
                 implementation(libs.lifecycle.viewmodel.compose)
+                implementation(libs.ktor.client.core)
             }
         }
         val commonTest by getting {
@@ -73,7 +74,6 @@ kotlin {
             dependsOn(jvmCommon)
             dependencies {
                 implementation(libs.kotlinx.coroutines.swing)
-                implementation(libs.ktor.client.core)
                 implementation(libs.ktor.client.cio)
             }
         }

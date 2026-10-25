@@ -14,7 +14,7 @@ import io.github.bigrirason_debug.platen.ui.repo.FileSettingsStore
 import io.github.bigrirason_debug.platen.ui.repo.ModuleBrushRepository
 import io.github.bigrirason_debug.platen.ui.repo.ModulePdfFacade
 import io.github.bigrirason_debug.platen.ui.repo.RepoBrushImageStore
-import io.github.bigrirason_debug.platen.ui.sync.DesktopSyncFacade
+import io.github.bigrirason_debug.platen.ui.sync.desktopSyncFacade
 import java.io.File
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -34,7 +34,7 @@ fun main() {
         notes = notes,
         brushes = brushes,
         settings = settings,
-        sync = DesktopSyncFacade(PlatenDirs.notes, notes, appScope),
+        sync = desktopSyncFacade(PlatenDirs.notes, notes, appScope),
         pdf = ModulePdfFacade(brushes, settings),
         files = AwtPlatformFiles(),
         images = RepoBrushImageStore(brushes),

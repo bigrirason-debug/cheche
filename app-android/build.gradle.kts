@@ -18,6 +18,8 @@ extensions.configure<com.android.build.api.dsl.ApplicationExtension>("android") 
         targetSdk = 36
         versionCode = 1
         versionName = project.version.toString()
+        // Credential Manager 용 Google 웹 클라이언트 ID(공개 식별자). CI 는 PLATEN_WEB_CLIENT_ID 시크릿을 -Pplaten.webClientId 로 넘긴다.
+        resValue("string", "platen_web_client_id", (project.findProperty("platen.webClientId") as String?) ?: "")
     }
     buildTypes {
         getByName("release") {
@@ -42,4 +44,5 @@ dependencies {
     implementation(libs.androidx.activity.compose)
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.compose.material3)
+    implementation(libs.ktor.client.okhttp)
 }
