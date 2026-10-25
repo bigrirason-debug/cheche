@@ -1,13 +1,13 @@
-// AGP 는 루트 buildscript classpath(-Pplaten.android=true 일 때)로 들어오므로 plugins 블록이 아니라 명령형 apply 를 쓴다.
-// (plugins 블록으로 다시 요청하면 "already on the classpath with an unknown version" 오류)
+// AGP·KGP 는 루트 buildscript classpath 에 있으므로(-Pplaten.android=true) 명령형으로 적용한다.
+// plugins{} 로 다시 요청하면 "already on the classpath with an unknown version" 오류가 나고,
+// 명령형 적용이라 타입 안전 접근자(implementation, android{}, kotlin{})가 생성되지 않아 문자열/extensions 로 구성한다.
 plugins {
-    // KGP 는 루트에서 multiplatform 플러그인으로 이미 classpath 에 있으므로 버전 없이 id 로만 적용한다.
-    id("org.jetbrains.kotlin.android")
     alias(libs.plugins.compose.multiplatform)
     alias(libs.plugins.compose.compiler)
 }
 
 apply(plugin = "com.android.application")
+apply(plugin = "org.jetbrains.kotlin.android")
 
 extensions.configure<com.android.build.api.dsl.ApplicationExtension>("android") {
     namespace = "io.github.bigrirason_debug.platen"
@@ -32,17 +32,20 @@ extensions.configure<com.android.build.api.dsl.ApplicationExtension>("android") 
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
+    packaging {
+        resources.excludes += setOf("META-INF/INDEX.LIST", "META-INF/io.netty.versions.properties", "META-INF/DEPENDENCIES", "META-INF/LICENSE*", "META-INF/NOTICE*")
+    }
 }
 
-kotlin {
+extensions.configure<org.jetbrains.kotlin.gradle.dsl.KotlinAndroidProjectExtension>("kotlin") {
     jvmToolchain(21)
     compilerOptions { jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17) }
 }
 
 dependencies {
-    implementation(project(":ui"))
-    implementation(libs.androidx.activity.compose)
-    implementation(libs.kotlinx.coroutines.android)
-    implementation(libs.compose.material3)
-    implementation(libs.ktor.client.okhttp)
+    "implementation"(project(":ui"))
+    "implementation"(libs.androidx.activity.compose)
+    "implementation"(libs.kotlinx.coroutines.android)
+    "implementation"(libs.compose.material3)
+    "implementation"(libs.ktor.client.okhttp)
 }

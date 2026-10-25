@@ -2,6 +2,11 @@
 
 실기기(갤럭시 탭 S9+ · Windows 노트북)·로컬 파일·계정이 필요한 항목. **필수**는 마일스톤이 막히는 것, **권장**은 등급을 "실측"으로 올리는 것. 결과는 `docs/research/samples/` 또는 `docs/measurements/`에 두고, 상용 브러시·개인 노트 원본은 커밋하지 않는다.
 
+## ★ 지금 바로 할 것 (10분)
+1. GitHub → Actions → `build` 최신 성공 실행 → Artifacts 에서 `platen-android-debug-apk`, `platen-windows`, `platen-mockups` 받기
+2. 태블릿에 APK 설치 → 진단 화면(설정 → 진단)에서 S1~S4 측정, 노트 몇 개 필기
+3. 노트북에 MSI 설치 → 같은 노트 파일(`.platen`)을 옮겨 열어 보기(동기화 설정 전에도 파일 복사로 확인 가능)
+
 ## 0. 환경 (지금)
 | # | 항목 | 등급 | 방법 |
 |---|---|---|---|
@@ -23,7 +28,7 @@
 | G1 | Cloud 프로젝트 `platen-sync` 생성 → Google Drive API 사용 설정 | 필수 | console.cloud.google.com |
 | G2 | OAuth 동의 화면: External, 앱 이름 Platen, 범위 `…/auth/drive.file`(+`openid email profile`), 테스트 사용자에 본인 Gmail | 필수 | 스파이크 후 "앱 게시 → In production"(비민감 범위라 검증 제출 불필요) |
 | G3 | 클라이언트 생성: Android ×2(디버그·릴리스 SHA-1, applicationId = 계획서 A2 확정값) · 웹 애플리케이션 ×1(Credential Manager용) · 데스크톱 앱 ×1 | 필수 | SHA-1: 디버그 `keytool -list -v -keystore "%USERPROFILE%\.android\debug.keystore" -alias androiddebugkey -storepass android -keypass android`, 릴리스 `keytool -list -v -keystore <release.jks> -alias <alias>`. 릴리스 keystore는 오프라인 백업 |
-| G4 | 값 전달 | 필수 | 리포에 넣지 말고: 웹/Android/데스크톱 client_id는 `local.properties`(gitignore) 형식으로 제게 알려주거나 GitHub Secrets(`PLATEN_WEB_CLIENT_ID`, `PLATEN_DESKTOP_CLIENT_ID`, `PLATEN_DESKTOP_CLIENT_SECRET`, `PLATEN_RELEASE_KEYSTORE_BASE64`, `PLATEN_KEYSTORE_PASSWORD`)에 등록 |
+| G4 | 값 전달(구현 확정, D-025) | 필수 | ① **Windows**: 데스크톱 클라이언트 JSON 을 `%USERPROFILE%\.platen\oauth-client.json` 으로 저장(리포에 넣지 않음) ② **Android**: 웹 애플리케이션 클라이언트 ID 를 GitHub 리포 Settings → Secrets → Actions 에 `PLATEN_WEB_CLIENT_ID` 로 등록 → Actions 에서 build 재실행(APK 에 주입) ③ Android 클라이언트: 패키지 `io.github.bigrirason_debug.platen` + **CI 디버그 키 SHA-1**(현재 APK 는 러너의 디버그 키로 서명 — 매 빌드 키가 같도록 `PLATEN_RELEASE_KEYSTORE_BASE64` 등록은 후속) |
 | G5 | 실측(R2·R1) | 권장 | 두 클라이언트로 각각 로그인 → 한쪽이 만든 파일이 다른 쪽에 보이는지; 7일 뒤 Testing 토큰 만료 여부 |
 
 ## 3. 샘플 파일 (M3 전까지)

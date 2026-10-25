@@ -131,3 +131,13 @@
 ## D-024 · 2026-10-25 · Compose 모듈의 로컬 검증 한계
 - 상황: Compose Multiplatform 1.12.2 데스크톱 아티팩트가 `androidx.compose.runtime`·`androidx.collection`·`androidx.annotation` 등 Google Maven 전용 의존성을 끌어오는데, 이 컨테이너는 dl.google.com 차단 → core-render·ui·app-desktop 은 로컬에서 의존성 해석 실패.
 - 결정: Compose 모듈의 증거는 **CI-실행 등급**(GitHub Actions ubuntu/windows)으로만. 로컬은 core-model·core-ink·brush·sync·pdf 의 desktopTest. core-render 에이전트가 쓴 init-script 우회(androidx 플레이스홀더 shim)는 스크래치패드 전용, 리포에 넣지 않음.
+
+## D-025 · 2026-10-25 · Opus head 인수 + 통합 결정
+- 상황: UI 셸 에이전트가 사용량 한도로 중단(10-25 01:10 UTC). 사용자 "opus head로 helm" → head 가 직접 통합.
+- 결정:
+  1. **로컬 Compose 검증 경로**: 스크래치패드 init-script 로 CMP 를 1.8.2(Maven Central 자급)로 고정해 `:ui`·`:app-desktop` 을 컨테이너에서 컴파일·테스트. 리포 빌드는 1.12.2 그대로(CI 가 정본). D-024 보완.
+  2. **material3 = 1.9.0**: CMP 1.9 이후 material3 는 별도 버전 체계라 `1.12.2` 가 존재하지 않음(CI 실패 원인).
+  3. **브러시 참조 = spec.id(안정 슬러그)**, 노트에는 같은 키로 brush zip 동봉. SHA-1 id(brushIdOf)는 중복 판정용으로만. 열 때 `registerEmbedded` 로 동봉 브러시를 로스터에 등록 → 다른 기기에서 임포트한 브러시도 렌더.
+  4. **동기화 dirty = 내용 해시**: `DirectoryLocalNoteStore` 가 파일 md5 ≠ 마지막 동기화 md5 이면 dirty. 편집 화면→동기화 신호 배선이 필요 없고 데이터 손실 위험이 낮다. 원격 반영(writeBytes)은 dirty 로 세지 않음.
+  5. **Android 웹 클라이언트 ID** 는 빌드 시 `-Pplaten.webClientId`(CI 시크릿 `PLATEN_WEB_CLIENT_ID`) → `resValue`. 없으면 동기화 UI 는 안내만, 앱은 로컬로 동작.
+  6. **undo z-순서 버그 수정**: RemoveStrokes/Objects 가 되살릴 때 맨 뒤에 붙이던 것을 원래 위치로(`prepare`).
