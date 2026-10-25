@@ -75,6 +75,7 @@ fun PlatenApp(env: AppEnvironment, nav: Navigator = remember { Navigator() }, di
                         val loaded = env.notes.load(s.noteId)
                         if (loaded == null) { loadError = "노트를 열 수 없습니다"; nav.back() } else {
                             val (note, att) = loaded
+                            env.brushes.registerEmbedded(att.brushes)
                             val ui = stored.ui.withDefaultSlots()
                             canvasState = CanvasState(EditorController(note), Viewport(), env.brushes, ui.slots, ui.selectedSlot, att).also { it.eraserRadiusPt = ui.eraserRadiusPt }
                         }

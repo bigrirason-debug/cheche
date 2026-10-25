@@ -11,6 +11,9 @@ actual object PlatformImages {
     actual fun encodePng(bitmap: ImageBitmap): ByteArray =
         ByteArrayOutputStream().also { bitmap.asAndroidBitmap().compress(Bitmap.CompressFormat.PNG, 100, it) }.toByteArray()
 
+    actual fun fromArgb(width: Int, height: Int, argb: IntArray): ImageBitmap =
+        Bitmap.createBitmap(argb, width, height, Bitmap.Config.ARGB_8888).asImageBitmap()
+
     actual fun decode(bytes: ByteArray): ImageBitmap? =
         runCatching { BitmapFactory.decodeByteArray(bytes, 0, bytes.size)?.asImageBitmap() }.getOrNull()
 

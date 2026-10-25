@@ -6,6 +6,8 @@ import androidx.compose.ui.graphics.ImageBitmap
 expect object PlatformImages {
     /** ImageBitmap → PNG 바이트(진단 PNG 덤프·썸네일). */
     fun encodePng(bitmap: ImageBitmap): ByteArray
+    /** ARGB 픽셀 배열 → ImageBitmap(브러시 팁 알파 마스크). */
+    fun fromArgb(width: Int, height: Int, argb: IntArray): ImageBitmap
     /** PNG/JPEG 바이트 → ImageBitmap. 실패 시 null. */
     fun decode(bytes: ByteArray): ImageBitmap?
     /** 플랫폼 이름(설정 > 정보, 밀도 기본값). */

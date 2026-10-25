@@ -73,6 +73,8 @@ kotlin {
             dependsOn(jvmCommon)
             dependencies {
                 implementation(libs.kotlinx.coroutines.swing)
+                implementation(libs.ktor.client.core)
+                implementation(libs.ktor.client.cio)
             }
         }
         val desktopTest by getting {

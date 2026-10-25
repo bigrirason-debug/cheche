@@ -34,6 +34,11 @@ interface BrushRepository {
     suspend fun import(name: String, bytes: ByteArray): BrushImportResult
     /** 노트에 동봉할 브러시 zip 바이트(없으면 null → 동봉 생략). */
     fun zipBytes(id: String): ByteArray?
+    /** 노트를 열 때 동봉 브러시를 로스터에 등록(다른 기기에서 임포트한 브러시도 그대로 렌더). */
+    fun registerEmbedded(zips: Map<String, ByteArray>) {}
+    /** stamp 엔진 팁/그레인 PNG(8-bit gray = 커버리지). 없으면 null. */
+    fun tipPng(id: String): ByteArray? = null
+    fun grainPng(id: String): ByteArray? = null
 }
 
 /**
@@ -61,50 +66,38 @@ class InMemoryBrushRepository(initial: List<BrushSpec> = BuiltinBrushes.all) : B
     }
 
     override fun zipBytes(id: String): ByteArray? = zips[id]
+    override fun tipPng(id: String): ByteArray? = BuiltinBrushes.tipPng(id)
+    override fun grainPng(id: String): ByteArray? = BuiltinBrushes.grainPng(id)
 }
 
+/**
+ * 내장 로스터 = brush 모듈 `BuiltInBrushes`(D-018, PLAN A8 9종)에 한국어 표시 이름만 입힌 것.
+ * 연필 2종은 stamp 엔진(절차적 팁+그레인 PNG)이다. 필드 이름은 UI·테스트 호환용 별칭.
+ */
 object BuiltinBrushes {
-    private val linear = listOf(CurvePoint(0f, 0f), CurvePoint(1f, 1f))
-    /** 가벼운 S 커브(제어점 4): 약한 필압은 더 가늘게, 강한 필압은 빨리 굵어짐 — 스타노트 기준 "필압 반응"의 출발점(추정, 실측 후 조정). */
-    private val soft = listOf(CurvePoint(0f, 0f), CurvePoint(0.3f, 0.2f), CurvePoint(0.7f, 0.8f), CurvePoint(1f, 1f))
+    private val m = io.github.bigrirason_debug.platen.brush.BuiltInBrushes
+    private val koNames = mapOf(
+        "pen-fine" to "펜", "pen-bold" to "굵은 펜", "fountain-soft" to "만년필", "fountain-flex" to "만년필 플렉스",
+        "pencil-hb" to "연필 HB", "pencil-6b" to "연필 6B", "monoline" to "모노라인",
+        "highlighter-flat" to "형광펜", "highlighter-round" to "형광펜 둥근",
+    )
+    private fun ko(spec: BrushSpec) = spec.copy(name = koNames[spec.id] ?: spec.name)
 
-    val pen1 = BrushSpec(
-        id = "builtin-pen-1", name = "펜", role = BrushRole.pen,
-        size = BrushSize(base = 2.5f, min = 0.5f, max = 12f), pressureSize = PressureMapping(0.6f, linear),
-        smoothing = Smoothing(streamline = 0.35f), taper = Taper(endLength = 10f),
-        exposed = listOf(ExposedParam.size, ExposedParam.pressureSize, ExposedParam.streamline, ExposedParam.taperEnd),
-    )
-    val pen2 = pen1.copy(id = "builtin-pen-2", name = "볼펜", size = BrushSize(base = 2f, min = 0.5f, max = 8f), pressureSize = PressureMapping(0.3f, linear), velocity = Velocity(size = -0.15f))
-    val fountain1 = BrushSpec(
-        id = "builtin-fountain-1", name = "만년필", role = BrushRole.fountain,
-        size = BrushSize(base = 3f, min = 1f, max = 14f), pressureSize = PressureMapping(0.85f, soft),
-        smoothing = Smoothing(streamline = 0.45f, stabilize = 0.2f), taper = Taper(startLength = 6f, endLength = 16f), tilt = Tilt(size = 0.3f),
-        cap = StrokeCap.round,
-        exposed = listOf(ExposedParam.size, ExposedParam.pressureSize, ExposedParam.stabilize, ExposedParam.streamline, ExposedParam.taperEnd),
-    )
-    val fountain2 = fountain1.copy(id = "builtin-fountain-2", name = "만년필 F", size = BrushSize(base = 2.2f, min = 0.8f, max = 10f), pressureSize = PressureMapping(0.7f, soft))
-    val pencil1 = BrushSpec(
-        id = "builtin-pencil-1", name = "연필", role = BrushRole.pencil, engine = BrushEngine.profile,
-        size = BrushSize(base = 2f, min = 0.5f, max = 10f), opacity = 0.85f, pressureSize = PressureMapping(0.4f, linear),
-        pressureOpacity = PressureMapping(0.6f, linear), grain = Grain(image = null, depth = 0.5f), tilt = Tilt(size = 0.5f, opacity = 0.3f),
-        smoothing = Smoothing(streamline = 0.2f), taper = Taper(endLength = 4f),
-        exposed = listOf(ExposedParam.size, ExposedParam.pressureSize, ExposedParam.grainDepth, ExposedParam.tiltSize),
-    )
-    val pencil2 = pencil1.copy(id = "builtin-pencil-2", name = "연필 4B", size = BrushSize(base = 3.5f, min = 1f, max = 14f), opacity = 0.95f, grain = Grain(image = null, depth = 0.7f))
-    val monoline = BrushSpec(
-        id = "builtin-monoline-1", name = "모노라인", role = BrushRole.marker,
-        size = BrushSize(base = 3f, min = 0.5f, max = 20f), pressureSize = PressureMapping(0f, linear), smoothing = Smoothing(streamline = 0.5f),
-        taper = Taper(endLength = 0f, auto = false), exposed = listOf(ExposedParam.size, ExposedParam.streamline),
-    )
-    val highlighter1 = BrushSpec(
-        id = "builtin-highlighter-1", name = "형광펜", role = BrushRole.highlighter,
-        size = BrushSize(base = 14f, min = 6f, max = 40f), opacity = 0.9f, pressureSize = PressureMapping(0f, linear), blend = BlendMode.multiply,
-        cap = StrokeCap.flat, smoothing = Smoothing(streamline = 0.6f, stabilize = 0.3f), taper = Taper(endLength = 0f, auto = false),
-        exposed = listOf(ExposedParam.size, ExposedParam.opacity, ExposedParam.stabilize),
-    )
-    val highlighter2 = highlighter1.copy(id = "builtin-highlighter-2", name = "형광펜 가는", size = BrushSize(base = 8f, min = 4f, max = 24f), cap = StrokeCap.round)
+    val pen1: BrushSpec = ko(m.penFine)
+    val pen2: BrushSpec = ko(m.penBold)
+    val fountain1: BrushSpec = ko(m.fountainSoft)
+    val fountain2: BrushSpec = ko(m.fountainFlex)
+    val pencil1: BrushSpec = ko(m.pencilHb)
+    val pencil2: BrushSpec = ko(m.pencil6b)
+    val monoline: BrushSpec = ko(m.monoline)
+    val highlighter1: BrushSpec = ko(m.highlighterFlat)
+    val highlighter2: BrushSpec = ko(m.highlighterRound)
 
     val all: List<BrushSpec> = listOf(pen1, pen2, fountain1, fountain2, pencil1, pencil2, monoline, highlighter1, highlighter2)
+
+    /** stamp 엔진 내장 브러시의 팁/그레인 PNG. */
+    fun tipPng(id: String): ByteArray? = if (id.startsWith("pencil-")) m.pencilTipPng else null
+    fun grainPng(id: String): ByteArray? = if (id.startsWith("pencil-")) m.pencilGrainPng else null
 
     /** 기본 펜꽂이 5슬롯: 펜·만년필·연필·모노라인·형광펜(노랑). */
     val defaultSlotBrushIds: List<String> = listOf(pen1.id, fountain1.id, pencil1.id, monoline.id, highlighter1.id)

@@ -11,7 +11,11 @@ import io.github.bigrirason_debug.platen.ui.platform.AwtPlatformFiles
 import io.github.bigrirason_debug.platen.ui.platform.PlatenDirs
 import io.github.bigrirason_debug.platen.ui.repo.FileNoteRepository
 import io.github.bigrirason_debug.platen.ui.repo.FileSettingsStore
-import io.github.bigrirason_debug.platen.ui.repo.InMemoryBrushRepository
+import io.github.bigrirason_debug.platen.ui.repo.ModuleBrushRepository
+import io.github.bigrirason_debug.platen.ui.repo.ModulePdfFacade
+import io.github.bigrirason_debug.platen.ui.repo.RepoBrushImageStore
+import io.github.bigrirason_debug.platen.ui.sync.DesktopSyncFacade
+import java.io.File
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -24,13 +28,17 @@ import kotlinx.coroutines.runBlocking
 fun main() {
     val appScope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
     val notes = FileNoteRepository(PlatenDirs.notes, appScope)
+    val brushes = ModuleBrushRepository(File(PlatenDirs.notes.parentFile, "brushes"))
+    val settings = FileSettingsStore(PlatenDirs.settings)
     val env = AppEnvironment(
         notes = notes,
-        brushes = InMemoryBrushRepository(),          // TODO(head): brush 모듈 로스터·임포터 연결
-        settings = FileSettingsStore(PlatenDirs.settings),
+        brushes = brushes,
+        settings = settings,
+        sync = DesktopSyncFacade(PlatenDirs.notes, notes, appScope),
+        pdf = ModulePdfFacade(brushes, settings),
         files = AwtPlatformFiles(),
+        images = RepoBrushImageStore(brushes),
         desktop = true,
-        // sync / pdf: 기본 Noop — TODO(head): sync·pdf 모듈 연결
     )
     Runtime.getRuntime().addShutdownHook(Thread { runBlocking { notes.flush() } })
     application {
