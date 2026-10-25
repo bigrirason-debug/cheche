@@ -8,7 +8,7 @@ on:
 
 concurrency:
   group: build-${{ github.ref }}
-  cancel-in-progress: true
+  cancel-in-progress: false  # 진행 중 런은 끝까지(증거 확보), 대기 중인 런만 최신으로 교체
 
 jobs:
   test-jvm:
