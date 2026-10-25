@@ -48,4 +48,5 @@ dependencies {
     "implementation"(libs.kotlinx.coroutines.android)
     "implementation"(libs.compose.material3)
     "implementation"(libs.ktor.client.okhttp)
+    "implementation"(libs.pdfbox.android) // PDFBoxResourceLoader.init(표준 폰트 메트릭)
 }

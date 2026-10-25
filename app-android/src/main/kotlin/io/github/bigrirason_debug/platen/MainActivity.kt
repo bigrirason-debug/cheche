@@ -52,6 +52,8 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
+        // pdfbox-android 표준 14 폰트 메트릭 로드(PDF 내보내기 텍스트) — pdf 모듈 보고 §6
+        com.tom_roush.pdfbox.android.PDFBoxResourceLoader.init(applicationContext)
         notes = FileNoteRepository(File(filesDir, "notes"), appScope)
         val brushes = ModuleBrushRepository(File(filesDir, "brushes"))
         val settings = FileSettingsStore(File(filesDir, "settings.json"))
