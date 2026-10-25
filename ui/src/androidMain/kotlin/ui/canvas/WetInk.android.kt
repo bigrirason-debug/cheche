@@ -43,7 +43,8 @@ private class FrontBufferWetInk(private val surface: SurfaceView, private val ho
     }
 
     override fun penDown(event: PointerEvent) {
-        event.motionEvent?.let { host.requestUnbufferedDispatch(it) }
+        // View.requestUnbufferedDispatch(MotionEvent) 는 API 30+(Tab S9+ 는 Android 14+)
+        if (android.os.Build.VERSION.SDK_INT >= 30) event.motionEvent?.let { host.requestUnbufferedDispatch(it) }
     }
 
     override fun segment(x0: Float, y0: Float, x1: Float, y1: Float, widthPx: Float, argb: Int) {
