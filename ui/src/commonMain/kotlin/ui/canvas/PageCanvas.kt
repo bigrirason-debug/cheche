@@ -102,6 +102,10 @@ fun PageCanvas(
     vp.updateLayout(PageLayout.of(controller.note))
     // 젖은 잉크 프론트버퍼(Android). 형광펜·반투명은 겹침이 진해지므로 Compose 경로만 쓴다.
     val wetHolder = remember { arrayOfNulls<WetInkOverlay>(1) }
+    // PDF 속지·플래너 배경 래스터(원본은 에셋으로 보존)
+    val bgScope = androidx.compose.runtime.rememberCoroutineScope()
+    val pdfBg = remember(state) { PdfBackgrounds({ id -> state.assets[id]?.second }, bgScope) }
+    androidx.compose.runtime.DisposableEffect(pdfBg) { onDispose { pdfBg.close() } }
     val wetEnabled = state.settings.ink.frontBuffer && !mouseDraw
 
     Box(Modifier.fillMaxSize()) {
@@ -332,6 +336,22 @@ fun PageCanvas(
                         val erasing = state.erasing
                         val renderPage = if (erasing.isEmpty()) page else page.copy(strokes = page.strokes.filterNot { it.id in erasing })
                         val localVisible = Rect(visible.left - slot.x, visible.top - slot.y, visible.right - slot.x, visible.bottom - slot.y)
+                        when (val bg = page.background) {
+                            is io.github.bigrirason_debug.platen.model.Background.PdfPage -> {
+                                @Suppress("UNUSED_VARIABLE") val bgVersion = pdfBg.version // 래스터 완료 시 다시 그리기
+                                drawRect(Color.White, size = Size(page.size.width, page.size.height))
+                                pdfBg.bitmap(bg.assetId, bg.pageIndex)?.let { img ->
+                                    drawImage(img, dstOffset = androidx.compose.ui.unit.IntOffset.Zero, dstSize = androidx.compose.ui.unit.IntSize(page.size.width.toInt(), page.size.height.toInt()))
+                                }
+                            }
+                            is io.github.bigrirason_debug.platen.model.Background.Image -> {
+                                drawRect(Color.White, size = Size(page.size.width, page.size.height))
+                                bitmaps.getOrPut("bg:" + bg.assetId) { state.assets[bg.assetId]?.let { PlatformImages.decode(it.second) } }?.let { img ->
+                                    drawImage(img, dstOffset = androidx.compose.ui.unit.IntOffset.Zero, dstSize = androidx.compose.ui.unit.IntSize(page.size.width.toInt(), page.size.height.toInt()))
+                                }
+                            }
+                            else -> {}
+                        }
                         with(pageRenderer) { drawPage(renderPage, localVisible, inkTheme) { state.resolveStroke(it) } }
                         drawObjects(page.objects, bitmaps, state, colors.ink, textMeasurer, scale)
                         if (live >= 0) state.liveBuilder?.let { b ->

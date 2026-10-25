@@ -52,6 +52,8 @@ class DefaultPageRenderer(
 
     private fun DrawScope.drawPaper(page: Page, visible: Rect, theme: InkTheme) {
         val bg = page.background
+        // PdfPage/Image 배경: 호출자(ui)가 비트맵을 먼저 깔아 둔다 — 여기서 종이를 칠하면 덮어 버린다.
+        if (bg is Background.PdfPage || bg is Background.Image) return
         // 라이트: 속지가 지정한 종이색(Template.paper / Solid.color). 다크: 항상 theme.paper(§7.1 종이 다크는 테마 토큰).
         val paper = when {
             theme.dark -> theme.paper
